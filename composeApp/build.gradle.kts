@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.compose.navigation)
             implementation(libs.compose.viewmodel)
             implementation(libs.kodein.di)
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {

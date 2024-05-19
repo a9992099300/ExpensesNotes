@@ -1,74 +1,64 @@
 package screens.main
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import navigation.AppNavGraph
+import navigation.MainScreens
+import navigation.rememberNavigationState
 import themes.AppTheme
 
-sealed class MainScreens(val route: String, val title: String, val image: ImageVector) {
-    data object Daily : MainScreens("daily", "Daily", Icons.AutoMirrored.Filled.List)
-    data object Statistics : MainScreens("statistics", "Statistics", Icons.Outlined.Check)
-    data object Settings : MainScreens("settings", "Settings", Icons.Outlined.Settings)
-}
-
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun MainScreen(
-    navigationController: NavHostController
-) {
-    val navController = rememberNavController()
-    val items = listOf(MainScreens.Daily, MainScreens.Statistics, MainScreens.Settings)
+fun MainScreen() {
+    val navigationState = rememberNavigationState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController, startDestination = MainScreens.Daily.route) {
-            composable(MainScreens.Daily.route) { }
-            composable(MainScreens.Statistics.route) { }
-            composable(MainScreens.Settings.route) {  }
-        }
-        
-        BottomNavigation(modifier = Modifier.align(Alignment.BottomStart), backgroundColor = AppTheme.colors.secondaryBackground) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-        
-                items.forEach { screen ->
+    val items = listOf(MainScreens.Expenses, MainScreens.Incomes, MainScreens.Regular, MainScreens.Loans)
+    val snackBarHostState = SnackbarHostState()
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        bottomBar = {
+            BottomNavigation(backgroundColor = AppTheme.colors.secondaryBackground) {
+
+                val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
+
+                items.forEachIndexed { index, screen ->
+                    val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                        it.route == screen.route
+                    } ?: false
                     BottomNavigationItem(
-                        icon = { Icon(screen.image, tint = AppTheme.colors.primaryText, contentDescription = screen.title) },
+                        icon = {
+                            Icon(
+                                screen.image,
+                                contentDescription = screen.title,
+                            )
+                        },
                         label = { Text(screen.title, color = AppTheme.colors.primaryText) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        selected = selected,
                         onClick = {
-                            navController.navigate(screen.route) {
-                                // Pop up to  the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().displayName) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
+                            if (!selected) {
+                                navigationState.navigateTo(screen.route)
                             }
-                        }
+                        },
+                        selectedContentColor = AppTheme.colors.primaryText,
+                        unselectedContentColor = AppTheme.colors.secondaryText
                     )
                 }
-            }   
+            }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
+        }
+    ) {
+        AppNavGraph(navigationState)
     }
 }

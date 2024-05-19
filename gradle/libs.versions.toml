@@ -33,6 +33,7 @@ compose-viewmodel = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compos
 compose-navigation = "org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha03"
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kodein-di = "org.kodein.di:kodein-di:7.20.2"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.0"
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
