@@ -10,6 +10,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import screens.expenses.models.ContentState
 import screens.expenses.models.ExpensesAction
 import screens.expenses.models.ExpensesEvent
 import screens.expenses.models.ExpensesViewState
@@ -17,35 +18,37 @@ import screens.models.ActionDate
 import screens.models.TypeCategory
 import screens.utils.Dates
 
-class ExpensesViewModel : BaseViewModel<ExpensesViewState, ExpensesAction, ExpensesEvent>(
-    initialState = ExpensesViewState.Content()
+class ExpensesViewModel : BaseViewModel<ContentState, ExpensesAction, ExpensesEvent>(
+    initialState = ContentState()
 ) {
 
     private var date: LocalDateTime =
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     private val timeZone = TimeZone.currentSystemDefault()
+
     init {
-        changeCategory(TypeCategory.DAY, viewState as ExpensesViewState.Content)
+        changeCategory(
+            TypeCategory.DAY,
+            ContentState(expensesViewState = ExpensesViewState.ShowContent)
+        )
     }
 
     override fun obtainEvent(viewEvent: ExpensesEvent) {
+        val state = viewState
         when (viewEvent) {
             is ExpensesEvent.OnCategoryClick -> {
-                val state = viewState
-                if (state is ExpensesViewState.Content) {
-                    changeCategory(viewEvent.category, state)
-                }
+                changeCategory(viewEvent.category, state)
             }
             is ExpensesEvent.OnDateChange -> {
-                val state = viewState
-                if (state is ExpensesViewState.Content) {
-                    changeDate(viewEvent.actionDate, state)
-                }
+                changeDate(viewEvent.actionDate, state)
+            }
+            is ExpensesEvent.OnTabChange -> {
+                viewState = state.copy(currentTabs = viewEvent.typeTab)
             }
         }
     }
 
-    private fun changeDate(actionDate: ActionDate, state: ExpensesViewState.Content) {
+    private fun changeDate(actionDate: ActionDate, state: ContentState) {
         val instant = date.toInstant(timeZone)
         handleDate(
             actionDate, instant, state,
@@ -61,7 +64,7 @@ class ExpensesViewModel : BaseViewModel<ExpensesViewState, ExpensesAction, Expen
     private fun handleDate(
         actionDate: ActionDate,
         instant: Instant,
-        state: ExpensesViewState.Content,
+        state: ContentState,
         dateTimeUnit: DateTimeUnit
     ) {
         val instantDay = when (actionDate) {
@@ -73,7 +76,7 @@ class ExpensesViewModel : BaseViewModel<ExpensesViewState, ExpensesAction, Expen
         changeCategory(state.currentCategory, state)
     }
 
-    private fun changeCategory(category: TypeCategory, state: ExpensesViewState.Content) {
+    private fun changeCategory(category: TypeCategory, state: ContentState) {
         val text = when (category) {
             TypeCategory.DAY -> "${date.dayOfMonth} ${Dates.getMonthName(date.monthNumber)} ${date.year}"
             TypeCategory.PERIOD -> ""

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -26,17 +28,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.trace
 import androidx.lifecycle.viewmodel.compose.viewModel
+import expensenotes.composeapp.generated.resources.Res
+import expensenotes.composeapp.generated.resources.all
+import expensenotes.composeapp.generated.resources.expenses
+import expensenotes.composeapp.generated.resources.incomes
 import navigation.ExpensesScreens
 import navigation.LocalNavHost
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import screens.components.CommonFilterChip
 import screens.components.CommonText
+import screens.expenses.models.ContentState
 import screens.expenses.models.ExpensesEvent
-import screens.expenses.models.ExpensesViewState
 import screens.expenses.viewmodel.ExpensesViewModel
 import screens.models.ActionDate
 import screens.models.CategoryUiModel
 import screens.models.TypeCategory
+import screens.models.TypeTab
 import themes.AppTheme
 
 @Composable
@@ -46,33 +56,32 @@ internal fun ExpensesScreen(
     val outerNavController = LocalNavHost.current
     val viewState = viewModel.viewStates().collectAsState()
     val viewAction by viewModel.viewActions().collectAsState(null)
-    Text("ExpensesScreen")
-    when (val state = viewState.value) {
-        ExpensesViewState.Loading -> {}
-        ExpensesViewState.NoItems -> {}
-        ExpensesViewState.Error -> {}
-        is ExpensesViewState.Content -> ContentExpensesScreen(
-            viewState = state,
-            onAddNewExpenses = {
-                outerNavController.navigate(ExpensesScreens.AddExpenses.route)
-            },
-            onClickCategory = {
-                viewModel.obtainEvent(ExpensesEvent.OnCategoryClick(it))
-            },
-            onChangeDate = {
-                viewModel.obtainEvent(ExpensesEvent.OnDateChange(it))
-            }
-        )
-    }
+    ContentExpensesScreen(
+        viewState = viewState.value,
+        onAddNewExpenses = {
+            outerNavController.navigate(ExpensesScreens.AddExpenses.route)
+        },
+        onClickCategory = {
+            viewModel.obtainEvent(ExpensesEvent.OnCategoryClick(it))
+        },
+        onChangeDate = {
+            viewModel.obtainEvent(ExpensesEvent.OnDateChange(it))
+        },
+        onChangeTab = {
+            viewModel.obtainEvent(ExpensesEvent.OnTabChange(it))
+        }
+    )
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ContentExpensesScreen(
     modifier: Modifier = Modifier,
-    viewState: ExpensesViewState.Content,
+    viewState: ContentState,
     onAddNewExpenses: () -> Unit,
     onClickCategory: (TypeCategory) -> Unit,
-    onChangeDate: (ActionDate) -> Unit
+    onChangeDate: (ActionDate) -> Unit,
+    onChangeTab: (TypeTab) -> Unit
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -80,6 +89,26 @@ fun ContentExpensesScreen(
     ) {
         Box {
             Column {
+                TabRow(
+                    selectedTabIndex = viewState.currentTabs.index,
+                    backgroundColor = AppTheme.colors.primaryBackground
+                ) {
+                    Tab(
+                        selected = viewState.currentTabs == TypeTab.ALL,
+                        onClick = { onChangeTab(TypeTab.ALL) },
+                        text = { Text(text = stringResource(Res.string.all)) }
+                    )
+                    Tab(
+                        selected = viewState.currentTabs == TypeTab.EXPENSES,
+                        onClick = { onChangeTab(TypeTab.EXPENSES) },
+                        text = { Text(text = stringResource(Res.string.expenses)) }
+                    )
+                    Tab(
+                        selected = viewState.currentTabs == TypeTab.INCOMES,
+                        onClick = { onChangeTab(TypeTab.INCOMES) },
+                        text = { Text(text = stringResource(Res.string.incomes)) }
+                    )
+                }
                 ChooseCategory(
                     viewState.currentCategory
                 ) {

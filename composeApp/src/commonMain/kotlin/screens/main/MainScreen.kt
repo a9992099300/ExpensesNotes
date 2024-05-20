@@ -21,7 +21,7 @@ import themes.AppTheme
 fun MainScreen() {
     val navigationState = rememberNavigationState()
 
-    val items = listOf(MainScreens.Expenses, MainScreens.Incomes, MainScreens.Regular, MainScreens.Loans)
+    val items = listOf(MainScreens.Expenses, MainScreens.Regular, MainScreens.Loans)
     val snackBarHostState = SnackbarHostState()
     val scope = rememberCoroutineScope()
 
