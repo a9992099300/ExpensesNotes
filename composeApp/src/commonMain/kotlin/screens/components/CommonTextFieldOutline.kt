@@ -3,23 +3,24 @@ package screens.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import themes.AppTheme
 
 @Composable
 fun CommonTextFieldOutline(
     text: String,
     hint: String,
     enabled: Boolean = true,
-    isSecure: Boolean = false,
     isError: Boolean = false,
     height: Int = 56,
-    trailingIcon: @Composable () -> Unit = {},
+    keyboardType: KeyboardType = KeyboardType.Text,
     onValueChanged: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -32,16 +33,14 @@ fun CommonTextFieldOutline(
         },
         label = { Text(hint) },
         enabled = enabled,
-        visualTransformation =
-        if (isSecure) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        },
         shape = RoundedCornerShape(10.dp),
-        trailingIcon = {
-            trailingIcon.invoke()
-        },
-        isError = isError
+        isError = isError,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType
+        ),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = AppTheme.colors.primaryTextColor,
+            focusedLabelColor = AppTheme.colors.primaryTextColor,
+        )
     )
 }

@@ -9,22 +9,23 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import screens.models.CategoryUiModel
-import screens.models.TypeCategory
+import screens.models.TypePeriod
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
 @Composable
 fun CommonFilterChip(
     categoryUiModel: CategoryUiModel,
-    currentCategory: TypeCategory,
-    onClick: (TypeCategory) -> Unit
+    currentCategory: TypePeriod,
+    onClick: (TypePeriod) -> Unit
 ) {
     FilterChip(
         modifier = Modifier
             .padding(4.dp),
-        selected = categoryUiModel.typeCategory == currentCategory,
-        onClick = { onClick.invoke(categoryUiModel.typeCategory) },
-        leadingIcon = if (categoryUiModel.typeCategory == currentCategory) {
+        selected = categoryUiModel.typePeriod == currentCategory,
+        onClick = { onClick.invoke(categoryUiModel.typePeriod) },
+        leadingIcon = if (categoryUiModel.typePeriod == currentCategory) {
             {
                 Icon(Icons.Outlined.Check, contentDescription = null)
             }
@@ -32,6 +33,6 @@ fun CommonFilterChip(
             null
         }
     ) {
-        CommonText(categoryUiModel.title)
+        CommonText(stringResource = categoryUiModel.title)
     }
 }

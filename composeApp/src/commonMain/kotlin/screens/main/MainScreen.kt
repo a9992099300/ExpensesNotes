@@ -15,8 +15,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import navigation.AppNavGraph
 import navigation.MainScreens
 import navigation.rememberNavigationState
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import themes.AppTheme
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MainScreen() {
     val navigationState = rememberNavigationState()
@@ -39,18 +42,18 @@ fun MainScreen() {
                         icon = {
                             Icon(
                                 screen.image,
-                                contentDescription = screen.title,
+                                contentDescription = screen.route,
                             )
                         },
-                        label = { Text(screen.title, color = AppTheme.colors.primaryText) },
+                        label = { Text(stringResource(screen.title) , color = AppTheme.colors.primaryTextColor) },
                         selected = selected,
                         onClick = {
                             if (!selected) {
                                 navigationState.navigateTo(screen.route)
                             }
                         },
-                        selectedContentColor = AppTheme.colors.primaryText,
-                        unselectedContentColor = AppTheme.colors.secondaryText
+                        selectedContentColor = AppTheme.colors.primaryTextColor,
+                        unselectedContentColor = AppTheme.colors.secondaryTextColor
                     )
                 }
             }

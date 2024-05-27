@@ -1,63 +1,37 @@
-package themes
-
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-internal val baseLightPalette = AppColors(
+data class ColorsApp(
+    val primaryBackground: Color,
+    val secondaryBackground: Color,
+    val activeBackground: Color,
+    val primaryAction: Color,
+    val primaryTextColor: Color,
+    val hintTextColor: Color,
+    val highlightTextColor: Color,
+    val secondaryTextColor: Color,
+    val thirdTextColor: Color,
+    val tagColor: Color,
+    val tagTextColor: Color,
+    val textFieldBackground: Color
+)
+
+val palette = ColorsApp(
     primaryBackground = Color(0xFFFFFFFF),
-    primaryText = Color(0xFF3D454C),
     secondaryBackground = Color(0xFFF3F4F5),
-    secondaryText = Color(0xCC7A8A99),
-    tintColor = Color.Magenta,
-    controlColor = Color(0xFF7A8A99),
-    errorColor = Color(0xFFFF3377)
+    activeBackground = Color(0xFFe6e6fa),
+    primaryAction = Color(0xFF3b3946), //Color(0xFFFd77d31),
+    primaryTextColor = Color(0xFF050B18),
+    hintTextColor = Color(0xFF696C75),
+    highlightTextColor = Color(0xFFF4D144),
+    secondaryTextColor = Color(0xFFd5def6),
+    thirdTextColor = Color(0xFFEEF2FB),
+    tagColor = Color(0x1844A9F4),
+    tagTextColor = Color(0xFF44A9F4),
+    textFieldBackground = Color(     0xFFA6A5B1)
 )
 
-internal val baseDarkPalette = AppColors(
-    primaryBackground = Color(0xFF23282D),
-    primaryText = Color(0xFFF2F4F5),
-    secondaryBackground = Color(0xFF191E23),
-    secondaryText = Color(0xCC7A8A99),
-    tintColor = Color.Magenta,
-    controlColor = Color(0xFF7A8A99),
-    errorColor = Color(0xFFFF6699)
-)
-
-val purpleLightPalette = baseLightPalette.copy(
-    tintColor = Color(0xFFAD57D9)
-)
-
-val purpleDarkPalette = baseDarkPalette.copy(
-    tintColor = Color(0xFFD580FF)
-)
-
-val orangeLightPalette = baseLightPalette.copy(
-    tintColor = Color(0xFFFF6619)
-)
-
-val orangeDarkPalette = baseDarkPalette.copy(
-    tintColor = Color(0xFFFF974D)
-)
-
-val blueLightPalette = baseLightPalette.copy(
-    tintColor = Color(0xFF4D88FF)
-)
-
-val blueDarkPalette = baseDarkPalette.copy(
-    tintColor = Color(0xFF99BBFF)
-)
-
-val redLightPalette = baseLightPalette.copy(
-    tintColor = Color(0xFFE63956)
-)
-
-val redDarkPalette = baseDarkPalette.copy(
-    tintColor = Color(0xFFFF5975)
-)
-
-val greenLightPalette = baseLightPalette.copy(
-    tintColor = Color(0xFF12B37D)
-)
-
-val greenDarkPalette = baseDarkPalette.copy(
-    tintColor = Color(0xFF7EE6C3)
-)
+val LocalColorProvider = staticCompositionLocalOf<ColorsApp> {
+    //error("No default implementation")
+    palette
+}

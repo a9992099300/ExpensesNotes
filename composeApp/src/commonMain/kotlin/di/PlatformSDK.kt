@@ -1,5 +1,6 @@
 package di
 
+import di.expenses.expensesModule
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.direct
@@ -19,6 +20,7 @@ object PlatformSDK {
                 importAll(
                     umbrellaModule,
                     coreModule,
+                    expensesModule
                 )
             }.direct
         )

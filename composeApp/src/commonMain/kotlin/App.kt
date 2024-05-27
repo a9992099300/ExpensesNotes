@@ -25,7 +25,9 @@ fun App(
                 composable(route = NavigationScreens.Main.title) {
                     MainScreen()
                 }
-                composable(route = ExpensesScreens.AddExpenses.route) {
+                composable(
+                    route = ExpensesScreens.AddExpenses.route
+                ) {
                     AddExpensesFlow()
                 }
             }

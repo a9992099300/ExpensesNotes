@@ -31,7 +31,7 @@ internal fun SplashScreen(
                 modifier = Modifier.fillMaxWidth(),
                 text = "App",
                 style = AppTheme.typography.heading,
-                color = AppTheme.colors.primaryText,
+                color = AppTheme.colors.primaryTextColor,
                 textAlign = TextAlign.Center
             )
             Text(
@@ -40,7 +40,7 @@ internal fun SplashScreen(
                     .padding(top = 4.dp),
                 text = "Full Compose Demo",
                 style = AppTheme.typography.body,
-                color = AppTheme.colors.secondaryText,
+                color = AppTheme.colors.primaryTextColor,
                 textAlign = TextAlign.Center
             )
         }

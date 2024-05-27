@@ -29,7 +29,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-viewmodel = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-beta01"
+compose-viewmodel = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-beta02"
 compose-navigation = "org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha03"
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kodein-di = "org.kodein.di:kodein-di:7.20.2"
