@@ -13,9 +13,12 @@ import screens.expenses.models.ExpensesContentState
 import screens.expenses.models.ExpensesAction
 import screens.expenses.models.ExpensesEvent
 import screens.expenses.models.ViewState
+import screens.expenses.models.getExpensesTags
+import screens.expenses.models.getIncomesTags
 import screens.expenses.repository.ExpensesRepository
 import screens.models.ActionDate
 import screens.models.TypePeriod
+import screens.models.TypeTab
 import screens.utils.Dates
 
 class ExpensesViewModel(
@@ -36,7 +39,7 @@ class ExpensesViewModel(
     override fun obtainEvent(viewEvent: ExpensesEvent) {
         val state = viewState
         when (viewEvent) {
-            is ExpensesEvent.OnCategoryClick -> {
+            is ExpensesEvent.OnPeriodClick -> {
                 changeCategory(viewEvent.category, state)
             }
 
@@ -45,15 +48,34 @@ class ExpensesViewModel(
             }
 
             is ExpensesEvent.OnTabChange -> {
-                viewState = state.copy(currentTabs = viewEvent.typeTab)
+                val tabs = getTags(viewEvent.typeTab)
+                viewState = state.copy(
+                    currentTabs = viewEvent.typeTab,
+                    tags = tabs,
+                    currentTag = tabs.first()
+                )
             }
 
             is ExpensesEvent.OnStateScreenChange -> {
-                viewState = state.copy(stateScreen = viewEvent.stateScreen)
+                val tabs = getTags(TypeTab.EXPENSES)
+                viewState = state.copy(
+                    stateScreen = viewEvent.stateScreen,
+                    currentTabs = TypeTab.EXPENSES,
+                    tags = tabs,
+                    currentTag = tabs.first()
+                )
             }
 
             is ExpensesEvent.OnSumChange -> {
-                viewState = state.copy(sum = viewEvent.text)
+                viewState = state.copy(sum = viewEvent.text.toLongOrNull() ?: 0L)
+            }
+
+            is ExpensesEvent.OnClickCategory -> {
+                viewState = state.copy(currentTag = viewEvent.tag)
+            }
+
+            is ExpensesEvent.OnCommentChanged -> {
+                viewState = state.copy(comment = viewEvent.text)
             }
         }
     }
@@ -100,4 +122,11 @@ class ExpensesViewModel(
             dateText = text
         )
     }
+
+    private fun getTags(type: TypeTab) =
+        if (type == TypeTab.EXPENSES) {
+            getExpensesTags()
+        } else {
+            getIncomesTags()
+        }
 }

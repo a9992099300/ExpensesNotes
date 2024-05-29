@@ -21,6 +21,7 @@ fun CommonTextFieldOutline(
     isError: Boolean = false,
     height: Int = 56,
     keyboardType: KeyboardType = KeyboardType.Text,
+    singleLine: Boolean = true,
     onValueChanged: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -41,6 +42,7 @@ fun CommonTextFieldOutline(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = AppTheme.colors.primaryTextColor,
             focusedLabelColor = AppTheme.colors.primaryTextColor,
-        )
+        ),
+        singleLine = singleLine
     )
 }

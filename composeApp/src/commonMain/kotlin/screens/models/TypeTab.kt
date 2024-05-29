@@ -1,7 +1,7 @@
 package screens.models
 
 enum class TypeTab (val index: Int) {
-    ALL(0),
-    EXPENSES(1),
-    INCOMES(2)
+    EXPENSES(0),
+    INCOMES(1),
+    ALL(2),
 }

@@ -41,6 +41,8 @@ kotlin {
             implementation(libs.compose.viewmodel)
             implementation(libs.kodein.di)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.composeIcons.tablerIcons)
+            implementation(libs.composeIcons.simpleIcons)
         }
 
         androidMain.dependencies {

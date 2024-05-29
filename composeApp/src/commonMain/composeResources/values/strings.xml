@@ -9,6 +9,19 @@
     <string name="day">День</string>
     <string name="month">Месяц</string>
     <string name="year">Год</string>
+    <string name="input_sum">Введите сумму</string>
+    <string name="tag_food">Еда</string>
+    <string name="tag_car">Авто</string>
+    <string name="tag_wife">Жена</string>
+    <string name="tag_tourism">Туризм</string>
+    <string name="tag_home">Дом</string>
+    <string name="choose_category">Выберите категорию</string>
+    <string name="save">Сохранить</string>
+    <string name="add">Добавить</string>
+    <string name="back_to_list">Вернуться к списку</string>
+    <string name="comment">Комментарий</string>
+    <string name="salary">Зарплата</string>
+    <string name="other_incomes">Другие</string>
 </resources>
 
 

@@ -14,7 +14,10 @@ data class ExpensesContentState(
     val dateText: String = "",
     val currentTabs: TypeTab = TypeTab.EXPENSES,
     val stateScreen: ExpensesStateScreen = ExpensesStateScreen.EXPENSES_LIST,
-    val sum: String = ""
+    val sum: Long = 0,
+    val currentTag: ExpensesTag = ExpensesTag.Home(),
+    val comment: String = "",
+    val tags: List<ExpensesTag> = getExpensesTags(),
 )
 
 sealed class ViewState {
