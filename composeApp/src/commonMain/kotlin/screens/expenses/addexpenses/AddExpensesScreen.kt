@@ -1,8 +1,14 @@
 package screens.expenses.addexpenses
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.material.Surface
@@ -11,19 +17,30 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import expensenotes.composeapp.generated.resources.Res
-import expensenotes.composeapp.generated.resources.all
+import expensenotes.composeapp.generated.resources.add
+import expensenotes.composeapp.generated.resources.back_to_list
+import expensenotes.composeapp.generated.resources.choose_category
+import expensenotes.composeapp.generated.resources.comment
 import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
+import expensenotes.composeapp.generated.resources.input_sum
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import screens.components.CommonButton
+import screens.components.CommonText
+import screens.components.CommonTextFieldOutline
 import screens.expenses.ChooseCategory
+import screens.expenses.ItemTag
 import screens.expenses.addexpenses.models.AddExpensesEvent
 import screens.expenses.addexpenses.models.AddExpensesViewState
 import screens.expenses.addexpenses.viewmodel.AddExpensesViewModel
 import screens.expenses.datePicker
-import screens.expenses.models.ExpensesEvent
+import screens.expenses.models.ExpensesTag
 import screens.models.ActionDate
 import screens.models.TypePeriod
 import screens.models.TypeTab
@@ -31,7 +48,8 @@ import themes.AppTheme
 
 @Composable
 internal fun AddExpensesScreen(
-    viewModel: AddExpensesViewModel = viewModel { AddExpensesViewModel() }
+    date: String,
+    viewModel: AddExpensesViewModel = viewModel { AddExpensesViewModel(date = date) }
 ) {
 
     val viewState = viewModel.viewStates().collectAsState()
@@ -49,6 +67,15 @@ internal fun AddExpensesScreen(
         onChangeDate = {
             viewModel.obtainEvent(AddExpensesEvent.OnDateChange(it))
         },
+        onSumChanged = {
+            viewModel.obtainEvent(AddExpensesEvent.OnSumChange(it))
+        },
+        onClickCategory = {
+            viewModel.obtainEvent(AddExpensesEvent.OnClickCategory(it))
+        },
+        onCommentChanged = {
+            viewModel.obtainEvent(AddExpensesEvent.OnCommentChanged(it))
+        }
     )
 }
 
@@ -60,6 +87,9 @@ fun ContentAddExpensesScreen(
     onChangeTab: (TypeTab) -> Unit,
     onClickPeriod: (TypePeriod) -> Unit,
     onChangeDate: (ActionDate) -> Unit,
+    onSumChanged: (String) -> Unit,
+    onClickCategory: (ExpensesTag) -> Unit,
+    onCommentChanged: (String) -> Unit,
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -71,11 +101,6 @@ fun ContentAddExpensesScreen(
                     selectedTabIndex = viewState.currentTabs.index,
                     backgroundColor = AppTheme.colors.primaryBackground
                 ) {
-                    Tab(
-                        selected = viewState.currentTabs == TypeTab.ALL,
-                        onClick = { onChangeTab(TypeTab.ALL) },
-                        text = { Text(text = stringResource(Res.string.all)) }
-                    )
                     Tab(
                         selected = viewState.currentTabs == TypeTab.EXPENSES,
                         onClick = { onChangeTab(TypeTab.EXPENSES) },
@@ -92,11 +117,93 @@ fun ContentAddExpensesScreen(
                 ) {
                     onClickPeriod(it)
                 }
-                datePicker(onChangeDate = {
-                    onChangeDate(it)
-                }, viewState.dateText)
+                datePicker(
+                    onChangeDate = {
+                        onChangeDate(it)
+                    },
+                    viewState.dateText,
+                    viewState.currentCategory
+                )
+
+                AddExpensesContent(
+                    viewState.sum.toString(),
+                    viewState.comment,
+                    viewState.currentTag,
+                    viewState.tags,
+                    onSumChanged,
+                    onClickCategory,
+                    onCommentChanged
+                )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class, InternalResourceApi::class, ExperimentalLayoutApi::class)
+@Composable
+fun AddExpensesContent(
+    sum: String,
+    comment: String,
+    currentCategory: ExpensesTag,
+    tags: List<ExpensesTag>,
+    onSumChanged: (String) -> Unit,
+    onClickCategory: (ExpensesTag) -> Unit,
+    onCommentChanged: (String) -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 6.dp)
+    ) {
+        CommonTextFieldOutline(
+            text = sum,
+            hint = stringResource(Res.string.input_sum),
+            keyboardType = KeyboardType.Number
+        ) {
+            onSumChanged(it)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CommonTextFieldOutline(
+            text = comment,
+            hint = stringResource(Res.string.comment),
+            keyboardType = KeyboardType.Text
+        ) {
+            onCommentChanged(it)
+        }
+
+        CommonText(
+            modifier = Modifier.padding(0.dp, 24.dp, 0.dp, 8.dp),
+            text = stringResource(Res.string.choose_category),
+            size = 16
+        )
+        FlowRow(
+            modifier = Modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            tags.forEach {
+                ItemTag(it, currentCategory == it) { tag ->
+                    onClickCategory(tag)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        CommonButton(
+            stringResource(Res.string.add),
+            onClickButton = {
+
+            }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CommonButton(stringResource(Res.string.back_to_list),
+            onClickButton = {
+                // onChangeStateScreen(ExpensesStateScreen.EXPENSES_LIST)
+            }
+        )
     }
 }
 

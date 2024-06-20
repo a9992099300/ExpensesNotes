@@ -12,14 +12,19 @@ import kotlinx.datetime.toLocalDateTime
 import screens.expenses.addexpenses.models.AddExpensesAction
 import screens.expenses.addexpenses.models.AddExpensesEvent
 import screens.expenses.addexpenses.models.AddExpensesViewState
+import screens.expenses.models.DateText
 import screens.expenses.models.ViewState
+import screens.expenses.models.getExpensesTags
+import screens.expenses.models.getIncomesTags
 import screens.expenses.repository.ExpensesRepository
 import screens.models.ActionDate
 import screens.models.TypePeriod
+import screens.models.TypeTab
 import screens.utils.Dates
 
 class AddExpensesViewModel(
-    private val expensesRepository: ExpensesRepository = instance()
+    private val expensesRepository: ExpensesRepository = instance(),
+    private val date: String
 ) : BaseViewModel<AddExpensesViewState, AddExpensesAction, AddExpensesEvent>(
     initialState = AddExpensesViewState(),
 ) {
@@ -46,6 +51,18 @@ class AddExpensesViewModel(
 
             is AddExpensesEvent.OnTabChange -> {
                 viewState = state.copy(currentTabs = viewEvent.typeTab)
+            }
+
+            is AddExpensesEvent.OnSumChange -> {
+                viewState = state.copy(sum = viewEvent.text.toLongOrNull() ?: 0L)
+            }
+
+            is AddExpensesEvent.OnClickCategory -> {
+                viewState = state.copy(currentTag = viewEvent.tag)
+            }
+
+            is AddExpensesEvent.OnCommentChanged -> {
+                viewState = state.copy(comment = viewEvent.text)
             }
         }
     }
@@ -81,16 +98,21 @@ class AddExpensesViewModel(
 
     private fun changeCategory(category: TypePeriod, state: AddExpensesViewState) {
         val date = expensesRepository.dateFlow.value
-        val text = when (category) {
-            TypePeriod.DAY -> "${date.dayOfMonth} ${Dates.getMonthName(date.monthNumber)} ${date.year}"
-            TypePeriod.PERIOD -> ""
-            TypePeriod.MONTH -> "${Dates.getMonthName2(date.monthNumber)} ${date.year}"
-            TypePeriod.YEAR -> date.year.toString()
-        }
 
         viewState = state.copy(
             currentCategory = category,
-            dateText = text
+            dateText = DateText(
+                day = date.dayOfMonth.toString(),
+                month = Dates.getMonthName(date.monthNumber),
+                year = date.year.toString()
+            )
         )
     }
+
+    private fun getTags(type: TypeTab) =
+        if (type == TypeTab.EXPENSES) {
+            getExpensesTags()
+        } else {
+            getIncomesTags()
+        }
 }

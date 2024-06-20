@@ -1,7 +1,10 @@
 package screens.expenses.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import base.BaseViewModel
 import di.Inject.instance
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -9,16 +12,13 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import screens.expenses.models.DateText
 import screens.expenses.models.ExpensesContentState
 import screens.expenses.models.ExpensesAction
 import screens.expenses.models.ExpensesEvent
-import screens.expenses.models.ViewState
-import screens.expenses.models.getExpensesTags
-import screens.expenses.models.getIncomesTags
 import screens.expenses.repository.ExpensesRepository
 import screens.models.ActionDate
 import screens.models.TypePeriod
-import screens.models.TypeTab
 import screens.utils.Dates
 
 class ExpensesViewModel(
@@ -30,52 +30,26 @@ class ExpensesViewModel(
     private val timeZone = TimeZone.currentSystemDefault()
 
     init {
-        changeCategory(
-            TypePeriod.DAY,
-            ExpensesContentState(viewState = ViewState.ShowContent)
-        )
+        viewModelScope.launch {
+            expensesRepository.dateFlow.collectLatest {
+                changeDateType(viewState.currentCategory)
+            }
+        }
     }
 
     override fun obtainEvent(viewEvent: ExpensesEvent) {
         val state = viewState
         when (viewEvent) {
             is ExpensesEvent.OnPeriodClick -> {
-                changeCategory(viewEvent.category, state)
+                changeDateType(viewEvent.category)
             }
-
             is ExpensesEvent.OnDateChange -> {
                 changeDate(viewEvent.actionDate, state)
             }
-
             is ExpensesEvent.OnTabChange -> {
-                val tabs = getTags(viewEvent.typeTab)
                 viewState = state.copy(
                     currentTabs = viewEvent.typeTab,
-                    tags = tabs,
-                    currentTag = tabs.first()
                 )
-            }
-
-            is ExpensesEvent.OnStateScreenChange -> {
-                val tabs = getTags(TypeTab.EXPENSES)
-                viewState = state.copy(
-                    stateScreen = viewEvent.stateScreen,
-                    currentTabs = TypeTab.EXPENSES,
-                    tags = tabs,
-                    currentTag = tabs.first()
-                )
-            }
-
-            is ExpensesEvent.OnSumChange -> {
-                viewState = state.copy(sum = viewEvent.text.toLongOrNull() ?: 0L)
-            }
-
-            is ExpensesEvent.OnClickCategory -> {
-                viewState = state.copy(currentTag = viewEvent.tag)
-            }
-
-            is ExpensesEvent.OnCommentChanged -> {
-                viewState = state.copy(comment = viewEvent.text)
             }
         }
     }
@@ -83,7 +57,7 @@ class ExpensesViewModel(
     private fun changeDate(actionDate: ActionDate, state: ExpensesContentState) {
         val instant = expensesRepository.dateFlow.value.toInstant(timeZone)
         handleDate(
-            actionDate, instant, state,
+            actionDate, instant,
             when (state.currentCategory) {
                 TypePeriod.DAY -> DateTimeUnit.DAY
                 TypePeriod.PERIOD -> DateTimeUnit.DAY
@@ -96,7 +70,6 @@ class ExpensesViewModel(
     private fun handleDate(
         actionDate: ActionDate,
         instant: Instant,
-        state: ExpensesContentState,
         dateTimeUnit: DateTimeUnit
     ) {
         val instantDay = when (actionDate) {
@@ -105,28 +78,18 @@ class ExpensesViewModel(
         }
         val localDateTimeDay = instantDay.toLocalDateTime(timeZone)
         expensesRepository.saveDate(localDateTimeDay)
-        changeCategory(state.currentCategory, state)
     }
 
-    private fun changeCategory(category: TypePeriod, state: ExpensesContentState) {
+    private fun changeDateType(category: TypePeriod) {
         val date = expensesRepository.dateFlow.value
-        val text = when (category) {
-            TypePeriod.DAY -> "${date.dayOfMonth} ${Dates.getMonthName(date.monthNumber)} ${date.year}"
-            TypePeriod.PERIOD -> ""
-            TypePeriod.MONTH -> "${Dates.getMonthName2(date.monthNumber)} ${date.year}"
-            TypePeriod.YEAR -> date.year.toString()
-        }
 
-        viewState = state.copy(
+        viewState = viewState.copy(
             currentCategory = category,
-            dateText = text
+            dateText = DateText(
+                day = date.dayOfMonth.toString(),
+                month = Dates.getMonthName(date.monthNumber),
+                year = date.year.toString()
+            )
         )
     }
-
-    private fun getTags(type: TypeTab) =
-        if (type == TypeTab.EXPENSES) {
-            getExpensesTags()
-        } else {
-            getIncomesTags()
-        }
 }
