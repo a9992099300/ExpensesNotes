@@ -6,9 +6,17 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
 //    alias(libs.plugins.cocoapods)
+    alias(libs.plugins.room)
+    alias(libs.plugins.ksp)
+
 }
 
 kotlin {
+
+    sourceSets.commonMain {
+        kotlin.srcDir("build/generated/ksp/metadata")
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -16,7 +24,7 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -27,7 +35,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -43,6 +51,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.composeIcons.tablerIcons)
             implementation(libs.composeIcons.simpleIcons)
+
+            implementation(libs.room.runtime)
+            implementation(libs.room.sqlite)
+            implementation(libs.room.sqlite.bundled)
         }
 
         androidMain.dependencies {
@@ -82,8 +94,27 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.room.compiler)
+//    add("kspAndroid", libs.room.compiler)
+//    add("kspIosX64", libs.room.compiler)
+//    add("kspIosArm64", libs.room.compiler)
+//    add("kspIosSimulatorArm64", libs.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata" ) {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 

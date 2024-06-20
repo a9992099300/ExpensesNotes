@@ -5,26 +5,28 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import screens.expenses.addexpenses.AddExpensesScreen
+import features.expenses.addexpenses.AddExpensesScreen
 
 enum class CreateFlowScreens(val title: String) {
     Start("start")
 }
 
 @Composable
-fun AddExpensesFlow() {
+fun AddExpensesFlow(
+    date: String
+) {
     val navigationController = rememberNavController()
 
     NavHost(
         navController = navigationController,
         startDestination = CreateFlowScreens.Start.title
     ) {
-        createAddExpensesFlow()
+        createAddExpensesFlow(date)
     }
 }
 
-fun NavGraphBuilder.createAddExpensesFlow() {
+fun NavGraphBuilder.createAddExpensesFlow(date: String) {
     composable(route = CreateFlowScreens.Start.title) {
-        AddExpensesScreen()
+        AddExpensesScreen(date)
     }
 }

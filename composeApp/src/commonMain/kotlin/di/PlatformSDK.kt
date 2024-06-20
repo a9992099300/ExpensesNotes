@@ -1,6 +1,8 @@
 package di
 
-import di.expenses.expensesModule
+import data.database.AppDatabase
+import di.database.daoModule
+import features.expenses.di.expensesModule
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.direct
@@ -9,10 +11,12 @@ import org.kodein.di.singleton
 object PlatformSDK {
 
     fun init(
-        configuration: PlatformConfiguration
+        configuration: PlatformConfiguration,
+        database: AppDatabase
     ) {
         val umbrellaModule = DI.Module("umbrella") {
             bind<PlatformConfiguration>() with singleton { configuration }
+            bind<AppDatabase>() with singleton { database }
         }
 
         Inject.createDependencies(
@@ -20,7 +24,8 @@ object PlatformSDK {
                 importAll(
                     umbrellaModule,
                     coreModule,
-                    expensesModule
+                    expensesModule,
+                    daoModule
                 )
             }.direct
         )
