@@ -2,7 +2,7 @@ package di
 
 import data.database.AppDatabase
 import di.database.daoModule
-import features.expenses.di.expensesModule
+import features.expenses.di.repositoryModule
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.direct
@@ -24,7 +24,7 @@ object PlatformSDK {
                 importAll(
                     umbrellaModule,
                     coreModule,
-                    expensesModule,
+                    repositoryModule,
                     daoModule
                 )
             }.direct

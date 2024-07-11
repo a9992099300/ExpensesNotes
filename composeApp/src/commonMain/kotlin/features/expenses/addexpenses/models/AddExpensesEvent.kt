@@ -16,5 +16,5 @@ sealed class AddExpensesEvent {
 
     data class OnCommentChanged(val text: String) : AddExpensesEvent()
 
-    class addExpensesItem() : AddExpensesEvent()
+    data object OnAddExpensesItem : AddExpensesEvent()
 }

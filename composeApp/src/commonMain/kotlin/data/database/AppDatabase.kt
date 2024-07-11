@@ -3,10 +3,13 @@ package data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import features.expenses.models.ExpensesDataModel
+import features.expenses.models.IncomesDataModel
 
-@Database(entities = [ExpensesDataModel::class], version = 1)
+@Database(entities = [ExpensesDataModel::class, IncomesDataModel::class], version = 1)
 abstract class AppDatabase: RoomDatabase(), DB {
     abstract fun getExpensesDao(): ExpensesDao
+
+    abstract fun getIncomesDao(): IncomesDao
 
     override fun clearAllTables() {
         super.clearAllTables()

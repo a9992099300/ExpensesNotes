@@ -2,6 +2,7 @@ package features.expenses.addexpenses.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import base.BaseViewModel
+import com.benasher44.uuid.uuid4
 import di.Inject.instance
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
@@ -15,20 +16,21 @@ import features.expenses.addexpenses.models.AddExpensesEvent
 import features.expenses.addexpenses.models.AddExpensesViewState
 import features.expenses.models.DateText
 import features.expenses.models.ExpensesDataModel
+import features.expenses.models.IncomesDataModel
 import features.expenses.models.ViewState
 import features.expenses.models.getExpensesTags
 import features.expenses.models.getIncomesTags
 import features.expenses.repository.ExpensesRepository
+import features.expenses.repository.IncomesRepository
 import features.models.ActionDate
 import features.models.TypePeriod
 import features.models.TypeTab
 import features.utils.Dates
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.getString
 
 class AddExpensesViewModel(
     private val expensesRepository: ExpensesRepository = instance(),
+    private val incomesRepository: IncomesRepository = instance(),
     private val date: String
 ) : BaseViewModel<AddExpensesViewState, AddExpensesAction, AddExpensesEvent>(
     initialState = AddExpensesViewState(),
@@ -66,36 +68,52 @@ class AddExpensesViewModel(
             is AddExpensesEvent.OnSumChange -> {
                 viewState = state.copy(sum = viewEvent.text.toLongOrNull() ?: 0L)
             }
-
             is AddExpensesEvent.OnClickCategory -> {
                 viewState = state.copy(currentTag = viewEvent.tag)
             }
-
             is AddExpensesEvent.OnCommentChanged -> {
                 viewState = state.copy(comment = viewEvent.text)
             }
-
-            is AddExpensesEvent.addExpensesItem -> {
-               addExpenses()
+            is AddExpensesEvent.OnAddExpensesItem -> {
+               addItem()
             }
         }
     }
 
-    @OptIn(ExperimentalResourceApi::class)
-    private fun addExpenses() {
+    private fun addItem() {
         viewModelScope.launch {
-            expensesRepository.addExpenses(
-                ExpensesDataModel(
-                    0L,
-                    viewState.sum,
-                    viewState.comment,
-                    getString( viewState.currentTag.name),
-                    expensesRepository.dateFlow.value.nanosecond.toString()
-                )
-            )
+            val date =  expensesRepository.dateFlow.value.toInstant(timeZone).toEpochMilliseconds()
+            if(viewState.currentTabs == TypeTab.EXPENSES) {
+                addExpenses(date)
+            } else {
+                addIncomes(date)
+            }
+            viewAction = AddExpensesAction.ActionBack
         }
     }
+    private suspend fun addExpenses(date: Long) {
+        expensesRepository.addExpenses(
+            ExpensesDataModel(
+                uuid4().mostSignificantBits,
+                viewState.sum,
+                viewState.comment,
+                viewState.currentTag.tagName,
+                date
+            )
+        )
+    }
 
+    private suspend fun addIncomes(date: Long) {
+        incomesRepository.addIncomes(
+            IncomesDataModel(
+                uuid4().mostSignificantBits,
+                viewState.sum,
+                viewState.comment,
+                viewState.currentTag.tagName,
+                date
+            )
+        )
+    }
 
     private fun changeDate(actionDate: ActionDate, state: AddExpensesViewState) {
         val instant = expensesRepository.dateFlow.value.toInstant(timeZone)

@@ -12,17 +12,26 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 
 @OptIn(ExperimentalResourceApi::class)
-sealed class IncomesTag {
-    open val name = Res.string.tag_home
-    open val icon = Res.drawable.restaurant_24dp
+sealed class IncomesTag: Tag {
+    override val name = Res.string.tag_home
+    override val icon = Res.drawable.restaurant_24dp
+    override val tagName = "salary"
 
     data class Salary (
         override val name: StringResource = Res.string.salary,
         override val icon: DrawableResource = Res.drawable.attach_money_24dp,
+        override val tagName: String = "salary",
     ) : ExpensesTag()
     data class OtherIncomes(
         override val name: StringResource = Res.string.other_incomes,
         override val icon: DrawableResource = Res.drawable.payments_24dp,
+        override val tagName: String = "other",
+    ) : ExpensesTag()
+
+    data class Other(
+        override val name: StringResource = Res.string.other_incomes,
+        override val icon: DrawableResource = Res.drawable.payments_24dp,
+        override val tagName: String = "other",
     ) : ExpensesTag()
 
 }

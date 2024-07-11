@@ -56,10 +56,11 @@ import features.components.CommonFilterChip
 import features.components.CommonText
 import features.expenses.models.DateText
 import features.expenses.models.ExpensesContentState
-import features.expenses.models.ExpensesDataModel
 import features.expenses.models.ExpensesEvent
 import features.expenses.models.ExpensesTag
+import features.expenses.models.ItemsUiModel
 import features.expenses.viewmodel.ExpensesViewModel
+import features.expenses.widgets.ExpensesItem
 import features.models.ActionDate
 import features.models.CategoryUiModel
 import features.models.ExpensesStateScreen
@@ -114,7 +115,7 @@ fun ContentExpensesScreen(
                     onClickPeriod(it)
                 }
                 datePicker(onChangeDate, viewState.dateText, viewState.currentCategory)
-                ListExpensesContent(viewState.expensesItems)
+                ListExpensesContent(viewState.items)
 
             }
 
@@ -258,8 +259,8 @@ fun ItemTag(
 }
 
 @Composable
-fun ListExpensesContent(expenses: List<ExpensesDataModel>) {
-    LazyColumn  (
+fun ListExpensesContent(expenses: List<ItemsUiModel>) {
+    LazyColumn(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
@@ -267,9 +268,9 @@ fun ListExpensesContent(expenses: List<ExpensesDataModel>) {
     ) {
         items(
             items = expenses,
-            key = { it.id}
-        ) { data ->
-            Text(data.comment + data.sum)
+            key = { it.id }
+        ) { model ->
+            ExpensesItem(model)
         }
     }
 }

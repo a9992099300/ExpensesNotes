@@ -37,6 +37,7 @@ import features.components.CommonText
 import features.components.CommonTextFieldOutline
 import features.expenses.ChooseCategory
 import features.expenses.ItemTag
+import features.expenses.addexpenses.models.AddExpensesAction
 import features.expenses.addexpenses.models.AddExpensesEvent
 import features.expenses.addexpenses.models.AddExpensesViewState
 import features.expenses.addexpenses.viewmodel.AddExpensesViewModel
@@ -54,6 +55,12 @@ internal fun AddExpensesScreen(
 ) {
     val viewState = viewModel.viewStates().collectAsState()
     val viewAction by viewModel.viewActions().collectAsState(null)
+    val outerNavigation = LocalNavHost.current
+
+    when(viewAction) {
+        AddExpensesAction.ActionBack -> outerNavigation.popBackStack()
+        null -> {}
+    }
 
     ContentAddExpensesScreen(
         modifier = Modifier,
@@ -75,6 +82,9 @@ internal fun AddExpensesScreen(
         },
         onCommentChanged = {
             viewModel.obtainEvent(AddExpensesEvent.OnCommentChanged(it))
+        },
+        onAddExpensesItem = {
+            viewModel.obtainEvent(AddExpensesEvent.OnAddExpensesItem)
         }
     )
 }
@@ -90,6 +100,7 @@ fun ContentAddExpensesScreen(
     onSumChanged: (String) -> Unit,
     onClickCategory: (ExpensesTag) -> Unit,
     onCommentChanged: (String) -> Unit,
+    onAddExpensesItem: () -> Unit,
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -132,7 +143,8 @@ fun ContentAddExpensesScreen(
                     viewState.tags,
                     onSumChanged,
                     onClickCategory,
-                    onCommentChanged
+                    onCommentChanged,
+                    onAddExpensesItem
                 )
             }
         }
@@ -149,6 +161,7 @@ fun AddExpensesContent(
     onSumChanged: (String) -> Unit,
     onClickCategory: (ExpensesTag) -> Unit,
     onCommentChanged: (String) -> Unit,
+    onAddExpensesItem: () -> Unit,
 ) {
 
     val outerNavigation = LocalNavHost.current
@@ -196,7 +209,7 @@ fun AddExpensesContent(
         CommonButton(
             stringResource(Res.string.add),
             onClickButton = {
-
+                onAddExpensesItem()
             }
         )
 

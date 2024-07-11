@@ -18,7 +18,6 @@ class ExpensesRepositoryImpl(
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     )
 
-
     override val dateFlow = _dateFlow.asStateFlow()
 
     override fun saveDate(date: LocalDateTime) {
@@ -31,6 +30,5 @@ class ExpensesRepositoryImpl(
 
     override fun getExpensesList(): Flow<List<ExpensesDataModel>> =
         appDatabase.getExpensesDao().getAll()
-
 
 }

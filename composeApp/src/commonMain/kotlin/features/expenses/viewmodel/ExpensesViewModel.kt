@@ -12,17 +12,23 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import features.expenses.models.DateText
 import features.expenses.models.ExpensesContentState
 import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesEvent
+import features.expenses.models.getDateText
+import features.expenses.models.mapToExpensesUiModel
+import features.expenses.models.mapToIncomesUiModel
 import features.expenses.repository.ExpensesRepository
+import features.expenses.repository.IncomesRepository
 import features.models.ActionDate
 import features.models.TypePeriod
-import features.utils.Dates
+import features.models.TypeTab
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.zip
 
 class ExpensesViewModel(
-    private val expensesRepository: ExpensesRepository = instance()
+    private val expensesRepository: ExpensesRepository = instance(),
+    private val incomesRepository: IncomesRepository = instance()
 ) : BaseViewModel<ExpensesContentState, ExpensesAction, ExpensesEvent>(
     initialState = ExpensesContentState(),
 ) {
@@ -37,14 +43,11 @@ class ExpensesViewModel(
                 }
             }
             launch {
-                expensesRepository.getExpensesList().collect() {
-                    viewState = viewState.copy(
-                        expensesItems = it
-                    )
-                }
+                getExpenses()
             }
         }
     }
+
 
     override fun obtainEvent(viewEvent: ExpensesEvent) {
         val state = viewState
@@ -52,13 +55,30 @@ class ExpensesViewModel(
             is ExpensesEvent.OnPeriodClick -> {
                 changeDateType(viewEvent.category)
             }
+
             is ExpensesEvent.OnDateChange -> {
                 changeDate(viewEvent.actionDate, state)
             }
+
             is ExpensesEvent.OnTabChange -> {
-                viewState = state.copy(
-                    currentTabs = viewEvent.typeTab,
-                )
+                changeTab(state, viewEvent)
+            }
+        }
+    }
+
+    private fun changeTab(
+        state: ExpensesContentState,
+        viewEvent: ExpensesEvent.OnTabChange
+    ) {
+        viewState = state.copy(
+            currentTabs = viewEvent.typeTab,
+        )
+        println("tab ${viewEvent.typeTab}")
+        viewModelScope.launch {
+            when (viewEvent.typeTab) {
+                TypeTab.EXPENSES -> getExpenses()
+                TypeTab.INCOMES -> getIncomes()
+                TypeTab.ALL -> getAllItems()
             }
         }
     }
@@ -94,11 +114,36 @@ class ExpensesViewModel(
 
         viewState = viewState.copy(
             currentCategory = category,
-            dateText = DateText(
-                day = date.dayOfMonth.toString(),
-                month = Dates.getMonthName(date.monthNumber),
-                year = date.year.toString()
-            )
+            dateText = getDateText(date)
         )
+    }
+
+    private suspend fun getExpenses() {
+        expensesRepository.getExpensesList().collect() {
+            viewState = viewState.copy(
+                items = it.map { data -> mapToExpensesUiModel(data) }
+            )
+        }
+    }
+
+    private suspend fun getIncomes() {
+        incomesRepository.getIncomesList().collect() {
+            viewState = viewState.copy(
+                items = it.map { data -> mapToIncomesUiModel(data) }
+            )
+        }
+    }
+
+    private suspend fun getAllItems() {
+        incomesRepository.getIncomesList()
+            .combine(expensesRepository.getExpensesList()) { incomes, expenses ->
+                val incomesUiModel = incomes.map { data -> mapToIncomesUiModel(data) }
+                val expensesUiModel = expenses.map { data -> mapToExpensesUiModel(data) }
+                val list = incomesUiModel + expensesUiModel
+                println(list)
+                viewState = viewState.copy(
+                    items = list
+                )
+            }
     }
 }

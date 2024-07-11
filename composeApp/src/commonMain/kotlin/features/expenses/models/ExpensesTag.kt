@@ -13,29 +13,43 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 
+
+interface Tag {
+    @OptIn(ExperimentalResourceApi::class)
+     val name:  StringResource
+    @OptIn(ExperimentalResourceApi::class)
+     val icon:  DrawableResource
+     val tagName:  String
+}
+
 @OptIn(ExperimentalResourceApi::class)
-sealed class ExpensesTag {
-    open val name = Res.string.tag_home
-    open val icon = Res.drawable.restaurant_24dp
+sealed class ExpensesTag : Tag {
+    override val name = Res.string.tag_home
+    override val icon = Res.drawable.restaurant_24dp
+    override val tagName =  "home"
 
     data class Home(
         override val name: StringResource = Res.string.tag_home,
         override val icon: DrawableResource = Res.drawable.home_24dp,
+        override val tagName: String =  "home",
     ) : ExpensesTag()
 
     data class Food(
         override val name: StringResource = Res.string.tag_food,
         override val icon: DrawableResource = Res.drawable.restaurant_24dp,
+        override val tagName: String =  "food",
     ) : ExpensesTag()
 
     data class Wife(
         override val name: StringResource = Res.string.tag_wife,
         override val icon: DrawableResource = Res.drawable.woman_24dp,
+        override val tagName: String =  "wife",
     ) : ExpensesTag()
 
     data class Car(
         override val name: StringResource = Res.string.tag_car,
         override val icon: DrawableResource = Res.drawable.local_shipping_24dp,
+        override val tagName: String =  "car",
     ) : ExpensesTag();
 }
 
