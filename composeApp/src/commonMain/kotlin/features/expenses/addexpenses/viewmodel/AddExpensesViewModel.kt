@@ -82,12 +82,13 @@ class AddExpensesViewModel(
 
     private fun addItem() {
         viewModelScope.launch {
-            val date =  expensesRepository.dateFlow.value.toInstant(timeZone).toEpochMilliseconds()
+            val date = expensesRepository.dateFlow.value.toInstant(timeZone).epochSeconds
             if(viewState.currentTabs == TypeTab.EXPENSES) {
                 addExpenses(date)
             } else {
                 addIncomes(date)
             }
+            expensesRepository.resetDate(expensesRepository.dateFlow.value)
             viewAction = AddExpensesAction.ActionBack
         }
     }
@@ -151,6 +152,7 @@ class AddExpensesViewModel(
             dateText = DateText(
                 day = date.dayOfMonth.toString(),
                 month = Dates.getMonthName(date.monthNumber),
+                monthOnly = Dates.getMonthName2(date.monthNumber),
                 year = date.year.toString()
             )
         )

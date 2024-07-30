@@ -28,6 +28,7 @@ sealed class ViewState {
 data class DateText(
     val day: String = "",
     val month: String = "",
+    val monthOnly: String = "",
     val year: String = "",
     val time: String = ""
 )
@@ -36,6 +37,7 @@ fun getDateText(date: LocalDateTime) =
     DateText(
         day = date.dayOfMonth.toString(),
         month = Dates.getMonthName(date.monthNumber),
+        monthOnly =  Dates.getMonthName2(date.monthNumber),
         year = date.year.toString(),
         time ="${date.time.hour}:${date.time.minute}"
     )

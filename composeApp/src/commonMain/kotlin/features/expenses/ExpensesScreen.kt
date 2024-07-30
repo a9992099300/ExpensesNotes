@@ -59,7 +59,10 @@ import features.expenses.models.ExpensesContentState
 import features.expenses.models.ExpensesEvent
 import features.expenses.models.ExpensesTag
 import features.expenses.models.ItemsUiModel
+import features.expenses.models.TypeData
+import features.expenses.models.TypePicker
 import features.expenses.viewmodel.ExpensesViewModel
+import features.expenses.widgets.DateItem
 import features.expenses.widgets.ExpensesItem
 import features.models.ActionDate
 import features.models.CategoryUiModel
@@ -114,7 +117,7 @@ fun ContentExpensesScreen(
                 ) {
                     onClickPeriod(it)
                 }
-                datePicker(onChangeDate, viewState.dateText, viewState.currentCategory)
+                datePicker(onChangeDate, viewState.dateText, viewState.currentCategory, TypePicker.LIST)
                 ListExpensesContent(viewState.items)
 
             }
@@ -162,12 +165,12 @@ private fun TabSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun datePicker(
     onChangeDate: (ActionDate) -> Unit,
     dateText: DateText,
     currentCategory: TypePeriod,
+    type: TypePicker,
 ) {
     val ordinaryStyle = SpanStyle(fontWeight = FontWeight.W400)
     val specialStyle = SpanStyle(fontWeight = FontWeight.W700)
@@ -185,17 +188,7 @@ fun datePicker(
                 })
         CommonText(
             modifier = Modifier.weight(1f),
-            text = buildAnnotatedString {
-                withStyle(style = if (currentCategory == TypePeriod.DAY) specialStyle else ordinaryStyle) {
-                    append(dateText.day + " ")
-                }
-                withStyle(style = if (currentCategory == TypePeriod.MONTH) specialStyle else ordinaryStyle) {
-                    append(dateText.month + " ")
-                }
-                withStyle(style = if (currentCategory == TypePeriod.YEAR) specialStyle else ordinaryStyle) {
-                    append(dateText.year)
-                }
-            }
+            text = getDateText(type, currentCategory, dateText, specialStyle, ordinaryStyle)
         )
         Image(
             Icons.Outlined.KeyboardArrowRight,
@@ -205,6 +198,41 @@ fun datePicker(
                 .clickable {
                     onChangeDate(ActionDate.INCREASE)
                 })
+    }
+}
+
+private fun getDateText(
+    type: TypePicker,
+    currentCategory: TypePeriod,
+    dateText: DateText,
+    specialStyle: SpanStyle,
+    ordinaryStyle: SpanStyle
+) = if (type == TypePicker.LIST) {
+    buildAnnotatedString {
+        if (currentCategory == TypePeriod.DAY) {
+            append(dateText.day + " ")
+            append(dateText.month + " ")
+            append(dateText.year)
+        }
+        if (currentCategory == TypePeriod.MONTH) {
+            append(dateText.monthOnly + " ")
+            append(dateText.year)
+        }
+        if (currentCategory == TypePeriod.YEAR) {
+            append(dateText.year)
+        }
+    }
+} else {
+    buildAnnotatedString {
+        withStyle(style = if (currentCategory == TypePeriod.DAY) specialStyle else ordinaryStyle) {
+            append(dateText.day + " ")
+        }
+        withStyle(style = if (currentCategory == TypePeriod.MONTH) specialStyle else ordinaryStyle) {
+            append(dateText.month + " ")
+        }
+        withStyle(style = if (currentCategory == TypePeriod.YEAR) specialStyle else ordinaryStyle) {
+            append(dateText.year)
+        }
     }
 }
 
@@ -270,7 +298,11 @@ fun ListExpensesContent(expenses: List<ItemsUiModel>) {
             items = expenses,
             key = { it.id }
         ) { model ->
-            ExpensesItem(model)
+            if (model.typeData == TypeData.DATA) {
+                ExpensesItem(model)
+            } else {
+                DateItem(model)
+            }
         }
     }
 }

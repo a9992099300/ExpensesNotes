@@ -41,6 +41,7 @@ kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.0"
 composeIcons-tablerIcons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "composeIcons" }
 composeIcons-simpleIcons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "composeIcons" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid-version" }
+kotlinx-datetime-ext = "com.raedghazal:kotlinx_datetime_ext:1.2.0"
 
 
 

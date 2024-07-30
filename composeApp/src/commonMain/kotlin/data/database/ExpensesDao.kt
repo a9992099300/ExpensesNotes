@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExpensesDao {
 
-    @Query("SELECT * FROM ExpensesDataModel")
+    @Query("SELECT * FROM expenses" )
    fun getAll(): Flow<List<ExpensesDataModel>>
+    @Query("SELECT * FROM `expenses` WHERE date BETWEEN :since AND :until ORDER BY date DESC")
+suspend fun getPeriod(since: Long, until: Long): List<ExpensesDataModel>
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(item: ExpensesDataModel)

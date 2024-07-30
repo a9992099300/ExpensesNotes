@@ -43,6 +43,7 @@ import features.expenses.addexpenses.models.AddExpensesViewState
 import features.expenses.addexpenses.viewmodel.AddExpensesViewModel
 import features.expenses.datePicker
 import features.expenses.models.ExpensesTag
+import features.expenses.models.TypePicker
 import features.models.ActionDate
 import features.models.TypePeriod
 import features.models.TypeTab
@@ -133,7 +134,8 @@ fun ContentAddExpensesScreen(
                         onChangeDate(it)
                     },
                     viewState.dateText,
-                    viewState.currentCategory
+                    viewState.currentCategory,
+                    TypePicker.ADD
                 )
 
                 AddExpensesContent(

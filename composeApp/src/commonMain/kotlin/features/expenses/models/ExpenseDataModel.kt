@@ -3,7 +3,7 @@ package features.expenses.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "expenses")
 data class ExpensesDataModel(
     @PrimaryKey val id: Long,
     val sum: Long,
