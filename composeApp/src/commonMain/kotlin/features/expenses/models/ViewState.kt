@@ -6,6 +6,7 @@ import features.models.TypePeriod
 import features.models.TypeTab
 import features.utils.Dates
 import kotlinx.datetime.LocalDateTime
+import utils.addZeroForTime
 
 @Immutable
 data class ExpensesContentState(
@@ -39,5 +40,5 @@ fun getDateText(date: LocalDateTime) =
         month = Dates.getMonthName(date.monthNumber),
         monthOnly =  Dates.getMonthName2(date.monthNumber),
         year = date.year.toString(),
-        time ="${date.time.hour}:${date.time.minute}"
+        time ="${date.time.hour.addZeroForTime()}:${date.time.minute.addZeroForTime()}"
     )

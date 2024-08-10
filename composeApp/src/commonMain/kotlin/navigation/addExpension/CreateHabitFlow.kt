@@ -13,7 +13,7 @@ enum class CreateFlowScreens(val title: String) {
 
 @Composable
 fun AddExpensesFlow(
-    date: String
+    tab: String
 ) {
     val navigationController = rememberNavController()
 
@@ -21,12 +21,12 @@ fun AddExpensesFlow(
         navController = navigationController,
         startDestination = CreateFlowScreens.Start.title
     ) {
-        createAddExpensesFlow(date)
+        createAddExpensesFlow(tab)
     }
 }
 
-fun NavGraphBuilder.createAddExpensesFlow(date: String) {
+fun NavGraphBuilder.createAddExpensesFlow(tab: String) {
     composable(route = CreateFlowScreens.Start.title) {
-        AddExpensesScreen(date)
+        AddExpensesScreen(tab)
     }
 }

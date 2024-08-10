@@ -13,6 +13,9 @@ interface IncomesDao {
     @Query("SELECT * FROM IncomesDataModel")
     fun getAll(): Flow<List<IncomesDataModel>>
 
+    @Query("SELECT * FROM `IncomesDataModel` WHERE date BETWEEN :since AND :until ORDER BY date DESC")
+    suspend fun getPeriod(since: Long, until: Long): List<IncomesDataModel>
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(item: IncomesDataModel)
 }

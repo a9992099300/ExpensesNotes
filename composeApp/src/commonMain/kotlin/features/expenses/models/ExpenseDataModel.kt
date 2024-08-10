@@ -4,10 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "expenses")
-data class ExpensesDataModel(
+data class ItemDataModel(
     @PrimaryKey val id: Long,
     val sum: Long,
     val comment: String,
     val tag: String,
-    val date: Long
+    val date: Long,
+    val isExpenses: Boolean,
 )

@@ -35,8 +35,8 @@ fun App(
                         },
                     )
                 ) {
-                    val date = it.arguments?.getString(KEY_DATE) ?: throw RuntimeException("Args is null")
-                    AddExpensesFlow(date)
+                    val tab = it.arguments?.getString(KEY_DATE) ?: throw RuntimeException("Args is null")
+                    AddExpensesFlow(tab)
                 }
             }
         }
@@ -54,8 +54,8 @@ sealed class NavigationScreens(val title: String) {
    data object Main : NavigationScreens("main")
 
     data object AddExpenses: NavigationScreens(ROUTE_ADD_EXPENSES_ARGS) {
-        fun getRouteWithArgs(date: String) : String {
-            return "$ROUTE_ADD_EXPENSES/${date}"
+        fun getRouteWithArgs(tabIndex: Int) : String {
+            return "$ROUTE_ADD_EXPENSES/${tabIndex}"
         }
     }
 }

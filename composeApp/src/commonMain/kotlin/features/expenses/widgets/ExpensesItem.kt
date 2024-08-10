@@ -61,10 +61,10 @@ fun ExpensesItem(
             Text(
                 modifier = Modifier.width(100.dp),
                 textAlign = TextAlign.End,
-                text = if (item.isIncomes) {
-                    item.sum.toString() + " Р"
-                } else {
+                text = if (item.isExpenses) {
                     "- " + item.sum.toString() + " Р"
+                } else {
+                    item.sum.toString() + " Р"
                 }
             )
         }

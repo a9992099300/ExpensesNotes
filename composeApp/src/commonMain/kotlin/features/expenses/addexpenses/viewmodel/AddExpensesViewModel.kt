@@ -15,23 +15,21 @@ import features.expenses.addexpenses.models.AddExpensesAction
 import features.expenses.addexpenses.models.AddExpensesEvent
 import features.expenses.addexpenses.models.AddExpensesViewState
 import features.expenses.models.DateText
-import features.expenses.models.ExpensesDataModel
-import features.expenses.models.IncomesDataModel
+import features.expenses.models.ItemDataModel
 import features.expenses.models.ViewState
 import features.expenses.models.getExpensesTags
 import features.expenses.models.getIncomesTags
 import features.expenses.repository.ExpensesRepository
-import features.expenses.repository.IncomesRepository
 import features.models.ActionDate
 import features.models.TypePeriod
 import features.models.TypeTab
+import features.models.getTab
 import features.utils.Dates
 import kotlinx.coroutines.launch
 
 class AddExpensesViewModel(
     private val expensesRepository: ExpensesRepository = instance(),
-    private val incomesRepository: IncomesRepository = instance(),
-    private val date: String
+    private val tab: String
 ) : BaseViewModel<AddExpensesViewState, AddExpensesAction, AddExpensesEvent>(
     initialState = AddExpensesViewState(),
 ) {
@@ -39,9 +37,21 @@ class AddExpensesViewModel(
     private val timeZone = TimeZone.currentSystemDefault()
 
     init {
-        changeCategory(
-            TypePeriod.DAY,
-            AddExpensesViewState(expensesViewState = ViewState.ShowContent)
+        val date = expensesRepository.dateFlow.value
+        val typeTab = getTab(tab.toIntOrNull() ?: 0)
+        val tags = getTags(typeTab)
+        viewState = AddExpensesViewState(
+            expensesViewState = ViewState.ShowContent,
+            currentCategory = TypePeriod.DAY,
+            dateText = DateText(
+                day = date.dayOfMonth.toString(),
+                month = Dates.getMonthName(date.monthNumber),
+                monthOnly = Dates.getMonthName2(date.monthNumber),
+                year = date.year.toString()
+            ),
+            currentTabs = typeTab,
+            tags = tags,
+            currentTag = tags.first()
         )
     }
 
@@ -57,61 +67,56 @@ class AddExpensesViewModel(
             }
 
             is AddExpensesEvent.OnTabChange -> {
-                val tags = getTags(viewEvent.typeTab)
-                viewState = state.copy(
-                    currentTabs = viewEvent.typeTab,
-                    tags = tags,
-                    currentTag = tags.first()
-                )
+                changeTab(viewEvent, state)
             }
 
             is AddExpensesEvent.OnSumChange -> {
                 viewState = state.copy(sum = viewEvent.text.toLongOrNull() ?: 0L)
             }
+
             is AddExpensesEvent.OnClickCategory -> {
                 viewState = state.copy(currentTag = viewEvent.tag)
             }
+
             is AddExpensesEvent.OnCommentChanged -> {
                 viewState = state.copy(comment = viewEvent.text)
             }
+
             is AddExpensesEvent.OnAddExpensesItem -> {
-               addItem()
+                addItem()
             }
         }
+    }
+
+    private fun changeTab(
+        viewEvent: AddExpensesEvent.OnTabChange,
+        state: AddExpensesViewState
+    ) {
+        val tags = getTags(viewEvent.typeTab)
+        viewState = state.copy(
+            currentTabs = viewEvent.typeTab,
+            tags = tags,
+            currentTag = tags.first()
+        )
     }
 
     private fun addItem() {
         viewModelScope.launch {
             val date = expensesRepository.dateFlow.value.toInstant(timeZone).epochSeconds
-            if(viewState.currentTabs == TypeTab.EXPENSES) {
-                addExpenses(date)
-            } else {
-                addIncomes(date)
-            }
-            expensesRepository.resetDate(expensesRepository.dateFlow.value)
+            addExpenses(date, viewState.currentTabs == TypeTab.EXPENSES)
             viewAction = AddExpensesAction.ActionBack
         }
     }
-    private suspend fun addExpenses(date: Long) {
-        expensesRepository.addExpenses(
-            ExpensesDataModel(
-                uuid4().mostSignificantBits,
-                viewState.sum,
-                viewState.comment,
-                viewState.currentTag.tagName,
-                date
-            )
-        )
-    }
 
-    private suspend fun addIncomes(date: Long) {
-        incomesRepository.addIncomes(
-            IncomesDataModel(
+    private suspend fun addExpenses(date: Long, isExpenses: Boolean) {
+        expensesRepository.addItem(
+            ItemDataModel(
                 uuid4().mostSignificantBits,
                 viewState.sum,
                 viewState.comment,
                 viewState.currentTag.tagName,
-                date
+                date,
+                isExpenses
             )
         )
     }

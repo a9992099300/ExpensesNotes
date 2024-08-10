@@ -7,16 +7,19 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,37 +31,36 @@ import expensenotes.composeapp.generated.resources.comment
 import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
 import expensenotes.composeapp.generated.resources.input_sum
-import navigation.LocalNavHost
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.InternalResourceApi
-import org.jetbrains.compose.resources.stringResource
 import features.components.CommonButton
 import features.components.CommonText
 import features.components.CommonTextFieldOutline
-import features.expenses.ChooseCategory
 import features.expenses.ItemTag
 import features.expenses.addexpenses.models.AddExpensesAction
 import features.expenses.addexpenses.models.AddExpensesEvent
 import features.expenses.addexpenses.models.AddExpensesViewState
 import features.expenses.addexpenses.viewmodel.AddExpensesViewModel
-import features.expenses.datePicker
+import features.expenses.getDateText
 import features.expenses.models.ExpensesTag
 import features.expenses.models.TypePicker
 import features.models.ActionDate
 import features.models.TypePeriod
 import features.models.TypeTab
+import navigation.LocalNavHost
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import themes.AppTheme
 
 @Composable
 internal fun AddExpensesScreen(
-    date: String,
-    viewModel: AddExpensesViewModel = viewModel { AddExpensesViewModel(date = date) }
+    tab: String,
+    viewModel: AddExpensesViewModel = viewModel { AddExpensesViewModel(tab = tab) }
 ) {
     val viewState = viewModel.viewStates().collectAsState()
     val viewAction by viewModel.viewActions().collectAsState(null)
     val outerNavigation = LocalNavHost.current
 
-    when(viewAction) {
+    when (viewAction) {
         AddExpensesAction.ActionBack -> outerNavigation.popBackStack()
         null -> {}
     }
@@ -124,18 +126,18 @@ fun ContentAddExpensesScreen(
                         text = { Text(text = stringResource(Res.string.incomes)) }
                     )
                 }
-                ChooseCategory(
-                    viewState.currentCategory
-                ) {
-                    onClickPeriod(it)
-                }
-                datePicker(
-                    onChangeDate = {
-                        onChangeDate(it)
-                    },
-                    viewState.dateText,
-                    viewState.currentCategory,
-                    TypePicker.ADD
+                CommonText(
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                        .height(40.dp)
+                        .fillMaxWidth(),
+                    text = getDateText(
+                        TypePicker.ADD,
+                        viewState.currentCategory,
+                        viewState.dateText,
+                        SpanStyle(fontWeight = FontWeight.W700),
+                        SpanStyle(fontWeight = FontWeight.W400)
+                    )
                 )
 
                 AddExpensesContent(

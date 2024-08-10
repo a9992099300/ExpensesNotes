@@ -10,14 +10,13 @@ import features.expenses.models.ItemsUiModel
 import features.expenses.models.TypeData
 import features.expenses.models.getDateText
 import features.expenses.models.mapToExpensesUiModel
-import features.expenses.models.mapToIncomesUiModel
 import features.expenses.repository.ExpensesRepository
-import features.expenses.repository.IncomesRepository
 import features.models.ActionDate
 import features.models.TypePeriod
 import features.models.TypeTab
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
@@ -30,19 +29,17 @@ import kotlinx.datetime.toLocalDateTime
 
 class ExpensesViewModel(
     private val expensesRepository: ExpensesRepository = instance(),
-    private val incomesRepository: IncomesRepository = instance()
 ) : BaseViewModel<ExpensesContentState, ExpensesAction, ExpensesEvent>(
     initialState = ExpensesContentState(),
 ) {
 
     private val timeZone = TimeZone.currentSystemDefault()
+    private val job = Job()
 
     init {
         viewModelScope.launch {
-            launch {
-                expensesRepository.dateFlow.collectLatest { date ->
-                    changeDateType(viewState.currentCategory, date)
-                }
+            expensesRepository.dateFlow.collectLatest { date ->
+                changeDateType(viewState.currentCategory, date)
             }
         }
     }
@@ -62,6 +59,12 @@ class ExpensesViewModel(
             is ExpensesEvent.OnTabChange -> {
                 changeTab(state, viewEvent)
             }
+
+            ExpensesEvent.OnAddClick -> {
+                viewModelScope.launch {
+                    viewAction = ExpensesAction.OpenAddExpenses(0, viewState.currentTabs)
+                }
+            }
         }
     }
 
@@ -72,10 +75,9 @@ class ExpensesViewModel(
         viewState = state.copy(
             currentTabs = viewEvent.typeTab,
         )
-        println("tab ${viewEvent.typeTab}")
         when (viewEvent.typeTab) {
-            TypeTab.EXPENSES -> getExpenses()
-            TypeTab.INCOMES -> getIncomes()
+            TypeTab.EXPENSES -> getItems(true)
+            TypeTab.INCOMES -> getItems(false)
             TypeTab.ALL -> getAllItems()
         }
 
@@ -105,9 +107,6 @@ class ExpensesViewModel(
         }
         val localDateTimeDay = instantDay.toLocalDateTime(timeZone)
         expensesRepository.saveDate(localDateTimeDay)
-        viewModelScope.launch {
-            getExpenses()
-        }
     }
 
     private fun changeDateType(category: TypePeriod, date: LocalDateTime) {
@@ -115,21 +114,47 @@ class ExpensesViewModel(
             currentCategory = category,
             dateText = getDateText(date)
         )
-        getExpenses()
+
+        when (viewState.currentTabs) {
+            TypeTab.EXPENSES -> getItems(true)
+            TypeTab.INCOMES -> getItems(true)
+            TypeTab.ALL -> getAllItems()
+        }
     }
 
-    private fun getExpenses() {
-        viewModelScope.launch {
-            val resultList = mutableListOf<ItemsUiModel>()
-            val uiModels = expensesRepository.getExpensesList(viewState.currentCategory)
-                .map { data -> mapToExpensesUiModel(data) }
-            uiModels.forEachIndexed { index, model ->
+    private fun getItems(isExpenses: Boolean) {
+        job.cancelChildren()
+        viewModelScope.launch(job) {
+            expensesRepository.getItemsList(viewState.currentCategory).collectLatest {
+                val models = it
+                    .filter { it.isExpenses == isExpenses }
+                    .map { data -> mapToExpensesUiModel(data) }
+                handleItems(models)
+            }
+        }
+    }
+
+    private fun getAllItems() {
+        job.cancelChildren()
+        viewModelScope.launch(job) {
+            expensesRepository.getItemsList(viewState.currentCategory).collectLatest {
+                val models = it
+                    .map { data -> mapToExpensesUiModel(data) }
+                handleItems(models)
+            }
+        }
+    }
+
+    private fun handleItems(uiModels: List<ItemsUiModel>) {
+        val resultList = mutableListOf<ItemsUiModel>()
+        uiModels.forEachIndexed { index, model ->
+            if (viewState.currentCategory != TypePeriod.DAY) {
                 if (index == 0) {
                     resultList.add(
                         ItemsUiModel(
                             id = model.id + 1000,
                             date = model.date,
-                            isIncomes = false,
+                            isExpenses = model.isExpenses,
                             typeData = TypeData.DATE
                         )
                     )
@@ -138,39 +163,16 @@ class ExpensesViewModel(
                         ItemsUiModel(
                             id = model.id + 1000,
                             date = model.date,
-                            isIncomes = false,
+                            isExpenses = model.isExpenses,
                             typeData = TypeData.DATE
                         )
                     )
                 }
-                resultList.add(model)
             }
-            viewState = viewState.copy(
-                items = resultList
-            )
+            resultList.add(model)
         }
-    }
-
-    private fun getIncomes() {
-        viewModelScope.launch {
-            incomesRepository.getIncomesList().collect() {
-                viewState = viewState.copy(
-                    items = it.map { data -> mapToIncomesUiModel(data) }
-                )
-            }
-        }
-    }
-
-    private fun getAllItems() {
-        incomesRepository.getIncomesList()
-            .combine(expensesRepository.getExpensesList()) { incomes, expenses ->
-                val incomesUiModel = incomes.map { data -> mapToIncomesUiModel(data) }
-                val expensesUiModel = expenses.map { data -> mapToExpensesUiModel(data) }
-                val list = incomesUiModel + expensesUiModel
-                println(list)
-                viewState = viewState.copy(
-                    items = list
-                )
-            }
+        viewState = viewState.copy(
+            items = resultList
+        )
     }
 }

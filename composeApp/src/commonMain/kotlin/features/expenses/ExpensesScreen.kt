@@ -47,14 +47,10 @@ import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
 import expensenotes.composeapp.generated.resources.month
 import expensenotes.composeapp.generated.resources.year
-import navigation.LocalNavHost
-import navigation.NavigationState
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import features.components.CommonFilterChip
 import features.components.CommonText
 import features.expenses.models.DateText
+import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
 import features.expenses.models.ExpensesEvent
 import features.expenses.models.ExpensesTag
@@ -69,6 +65,11 @@ import features.models.CategoryUiModel
 import features.models.ExpensesStateScreen
 import features.models.TypePeriod
 import features.models.TypeTab
+import navigation.LocalNavHost
+import navigation.NavigationState
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import themes.AppTheme
 
 @Composable
@@ -79,10 +80,19 @@ internal fun ExpensesScreen(
     val outerNavController = LocalNavHost.current
     val viewState = viewModel.viewStates().collectAsState()
     val viewAction by viewModel.viewActions().collectAsState(null)
+
+    when (val state = viewAction) {
+        is ExpensesAction.OpenAddExpenses -> {
+            outerNavController.navigate(NavigationScreens.AddExpenses.getRouteWithArgs(state.currentTab.index))
+        }
+
+        else -> {}
+    }
+
     ContentExpensesScreen(
         viewState = viewState.value,
         onChangeStateScreen = {
-            outerNavController.navigate(NavigationScreens.AddExpenses.getRouteWithArgs("100000"))
+            viewModel.obtainEvent(ExpensesEvent.OnAddClick)
         },
         onClickPeriod = {
             viewModel.obtainEvent(ExpensesEvent.OnPeriodClick(it))
@@ -117,7 +127,12 @@ fun ContentExpensesScreen(
                 ) {
                     onClickPeriod(it)
                 }
-                datePicker(onChangeDate, viewState.dateText, viewState.currentCategory, TypePicker.LIST)
+                datePicker(
+                    onChangeDate,
+                    viewState.dateText,
+                    viewState.currentCategory,
+                    TypePicker.LIST
+                )
                 ListExpensesContent(viewState.items)
 
             }
@@ -201,7 +216,7 @@ fun datePicker(
     }
 }
 
-private fun getDateText(
+fun getDateText(
     type: TypePicker,
     currentCategory: TypePeriod,
     dateText: DateText,
@@ -310,7 +325,6 @@ fun ListExpensesContent(expenses: List<ItemsUiModel>) {
 @OptIn(ExperimentalResourceApi::class)
 val categories: List<CategoryUiModel> = listOf(
     CategoryUiModel(TypePeriod.DAY, Res.string.day),
-    // CategoryUiModel(TypeCategory.PERIOD, Res.string.all),
     CategoryUiModel(TypePeriod.MONTH, Res.string.month),
     CategoryUiModel(TypePeriod.YEAR, Res.string.year)
 )

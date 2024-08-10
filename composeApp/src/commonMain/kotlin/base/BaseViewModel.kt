@@ -13,7 +13,7 @@ public abstract class BaseViewModel<State : Any, Action, Event>(initialState: St
     private val _viewStates = MutableStateFlow(initialState)
 
     private val _viewActions =
-        MutableSharedFlow<Action?>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        MutableSharedFlow<Action?>(extraBufferCapacity = 1, replay = 0, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     public fun viewStates(): StateFlow<State> = _viewStates.asStateFlow()
 

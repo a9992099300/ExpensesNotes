@@ -2,10 +2,10 @@ package data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import features.expenses.models.ExpensesDataModel
+import features.expenses.models.ItemDataModel
 import features.expenses.models.IncomesDataModel
 
-@Database(entities = [ExpensesDataModel::class, IncomesDataModel::class], version = 1)
+@Database(entities = [ItemDataModel::class, IncomesDataModel::class], version = 1)
 abstract class AppDatabase: RoomDatabase(), DB {
     abstract fun getExpensesDao(): ExpensesDao
 

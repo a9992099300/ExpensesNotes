@@ -1,7 +1,7 @@
 package features.expenses.repository
 
 import data.database.AppDatabase
-import features.expenses.models.ExpensesDataModel
+import features.expenses.models.ItemDataModel
 import features.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,14 +36,16 @@ class ExpensesRepositoryImpl(
         _dateFlow.value = date
     }
 
-    override suspend fun addExpenses(model: ExpensesDataModel) {
+    override suspend fun addItem(model: ItemDataModel) {
         appDatabase.getExpensesDao().insert(model)
     }
 
-    override fun getExpensesList(): Flow<List<ExpensesDataModel>> =
+    override fun getItemsList(): Flow<List<ItemDataModel>> =
         appDatabase.getExpensesDao().getAll()
 
-    override suspend fun getExpensesList(typePeriod: TypePeriod): List<ExpensesDataModel> =
+    override suspend fun getItemsList(
+        typePeriod: TypePeriod
+    ): Flow<List<ItemDataModel>> =
         when (typePeriod) {
             TypePeriod.DAY -> getExpensesListDay()
             TypePeriod.PERIOD -> getExpensesListDay()
@@ -51,13 +53,13 @@ class ExpensesRepositoryImpl(
             TypePeriod.YEAR -> getExpensesListYears()
         }
 
-    private suspend fun getExpensesListDay(): List<ExpensesDataModel> {
+    private fun getExpensesListDay(): Flow<List<ItemDataModel>> {
         val dayStart = dateFlow.value.date.atStartOfDayIn(timeZone)
         val dayEnd = dayStart.plus(1, DateTimeUnit.DAY, timeZone).epochSeconds
         return appDatabase.getExpensesDao().getPeriod(dayStart.epochSeconds, dayEnd)
     }
 
-    private suspend fun getExpensesListMonth(): List<ExpensesDataModel> {
+    private fun getExpensesListMonth(): Flow<List<ItemDataModel>> {
         val date = dateFlow.value.date
         val startMonth = LocalDateTime(date.year, date.month, 1, 0, 0, 0).toInstant(timeZone)
         val endMonth = startMonth.plus(1, DateTimeUnit.MONTH, timeZone)
@@ -65,7 +67,7 @@ class ExpensesRepositoryImpl(
             .getPeriod(startMonth.epochSeconds, endMonth.epochSeconds)
     }
 
-    private suspend fun getExpensesListYears(): List<ExpensesDataModel> {
+    private fun getExpensesListYears(): Flow<List<ItemDataModel>> {
         val date = dateFlow.value.date
         val startYears = LocalDateTime(date.year, 1, 1, 0, 0, 0).toInstant(timeZone)
         val endYears = startYears.plus(1, DateTimeUnit.YEAR, timeZone)

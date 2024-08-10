@@ -1,6 +1,6 @@
 package features.expenses.repository
 
-import features.expenses.models.ExpensesDataModel
+import features.expenses.models.ItemDataModel
 import features.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +14,10 @@ interface ExpensesRepository {
 
     fun resetDate(date: LocalDateTime)
 
-    suspend fun addExpenses(model: ExpensesDataModel)
+    suspend fun addItem(model: ItemDataModel)
 
-    fun getExpensesList(): Flow<List<ExpensesDataModel>>
+    fun getItemsList(): Flow<List<ItemDataModel>>
 
-    suspend fun getExpensesList(typePeriod: TypePeriod): List<ExpensesDataModel>
+    suspend fun getItemsList(typePeriod: TypePeriod): Flow<List<ItemDataModel>>
 
 }
