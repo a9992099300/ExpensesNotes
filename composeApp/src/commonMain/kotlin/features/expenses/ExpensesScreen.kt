@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
@@ -29,8 +31,10 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +58,6 @@ import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
 import features.expenses.models.ExpensesEvent
 import features.expenses.models.ExpensesTag
-import features.expenses.models.ItemsUiModel
 import features.expenses.models.TypeData
 import features.expenses.models.TypePicker
 import features.expenses.viewmodel.ExpensesViewModel
@@ -133,7 +136,7 @@ fun ContentExpensesScreen(
                     viewState.currentCategory,
                     TypePicker.LIST
                 )
-                ListExpensesContent(viewState.items)
+                ListExpensesContent(viewState)
 
             }
 
@@ -141,7 +144,7 @@ fun ContentExpensesScreen(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomEnd)
                     .padding(20.dp, 20.dp),
-                backgroundColor = AppTheme.colors.primaryBackground,
+                backgroundColor = AppTheme.colors.primaryAction,
                 onClick = {
                     onChangeStateScreen.invoke(ExpensesStateScreen.ADD_EXPENSES)
                 }
@@ -160,7 +163,7 @@ private fun TabSelector(
 ) {
     TabRow(
         selectedTabIndex = viewState.currentTabs.index,
-        backgroundColor = AppTheme.colors.primaryBackground
+        backgroundColor = AppTheme.colors.navbarBackground
     ) {
         Tab(
             selected = viewState.currentTabs == TypeTab.EXPENSES,
@@ -302,15 +305,30 @@ fun ItemTag(
 }
 
 @Composable
-fun ListExpensesContent(expenses: List<ItemsUiModel>) {
+fun ListExpensesContent(expenses: ExpensesContentState) {
+    val state = rememberLazyListState()
+
+    LaunchedEffect(expenses.currentCategory, expenses.currentTabs) {
+        snapshotFlow { state.firstVisibleItemIndex }
+            .collect {
+                // Scroll to the top if a new item is added.
+                // (But only if user is scrolled to the top already.)
+                if (it <= 1) {
+                    state.scrollToItem(0)
+                }
+            }
+    }
     LazyColumn(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp),
+        state = state
+//            .verticalScroll(state)
+          //  .nestedScroll(),
     ) {
         items(
-            items = expenses,
+            items = expenses.items,
             key = { it.id }
         ) { model ->
             if (model.typeData == TypeData.DATA) {

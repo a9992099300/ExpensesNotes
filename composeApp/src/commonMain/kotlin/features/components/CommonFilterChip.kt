@@ -1,6 +1,7 @@
 package features.components
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
 import androidx.compose.material.Icon
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import features.models.CategoryUiModel
 import features.models.TypePeriod
+import themes.AppTheme
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
 @Composable
@@ -23,6 +25,10 @@ fun CommonFilterChip(
     FilterChip(
         modifier = Modifier
             .padding(4.dp),
+        colors = ChipDefaults.filterChipColors(
+            selectedBackgroundColor = AppTheme.colors.activeBackground,
+            backgroundColor = AppTheme.colors.activeBackground.copy(alpha = 0.5F)
+        ),
         selected = categoryUiModel.typePeriod == currentCategory,
         onClick = { onClick.invoke(categoryUiModel.typePeriod) },
         leadingIcon = if (categoryUiModel.typePeriod == currentCategory) {

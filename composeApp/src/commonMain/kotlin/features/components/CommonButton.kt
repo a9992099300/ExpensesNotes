@@ -6,10 +6,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import themes.AppTheme
@@ -25,7 +27,7 @@ fun CommonButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(48.dp)
             .clip(shape = RoundedCornerShape(24.dp)),
         onClick = onClickButton,
         colors = ButtonDefaults.buttonColors(
@@ -41,7 +43,9 @@ fun CommonButton(
         } else {
             Text(
                 text,
-                fontSize = 18.sp
+                style = MaterialTheme.typography.h4,
+                fontSize = 18.sp,
+                color = AppTheme.colors.primaryTextColor
             )
         }
     }

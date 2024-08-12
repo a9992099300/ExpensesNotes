@@ -2,6 +2,7 @@ package features.main
 
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -16,6 +17,7 @@ import navigation.AppNavGraph
 import navigation.MainScreens
 import navigation.rememberNavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import themes.AppTheme
 
@@ -30,7 +32,7 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            BottomNavigation(backgroundColor = AppTheme.colors.secondaryBackground) {
+            BottomNavigation(backgroundColor = AppTheme.colors.navbarBackground) {
 
                 val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
 
@@ -40,10 +42,7 @@ fun MainScreen() {
                     } ?: false
                     BottomNavigationItem(
                         icon = {
-                            Icon(
-                                screen.image,
-                                contentDescription = screen.route,
-                            )
+                            Icon(painter = painterResource(screen.image), contentDescription = null)
                         },
                         label = { Text(stringResource(screen.title) , color = AppTheme.colors.primaryTextColor) },
                         selected = selected,
@@ -53,7 +52,7 @@ fun MainScreen() {
                             }
                         },
                         selectedContentColor = AppTheme.colors.primaryTextColor,
-                        unselectedContentColor = AppTheme.colors.secondaryTextColor
+                        unselectedContentColor = AppTheme.colors.primaryTextColor.copy(alpha = ContentAlpha.disabled)
                     )
                 }
             }

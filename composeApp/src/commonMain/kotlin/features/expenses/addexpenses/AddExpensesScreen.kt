@@ -112,8 +112,8 @@ fun ContentAddExpensesScreen(
         Box {
             Column {
                 TabRow(
-                    selectedTabIndex = viewState.currentTabs.index,
-                    backgroundColor = AppTheme.colors.primaryBackground
+                    selectedTabIndex = if (TypeTab.EXPENSES.index == viewState.currentTabs.index) 0 else 1,
+                    backgroundColor = AppTheme.colors.navbarBackground
                 ) {
                     Tab(
                         selected = viewState.currentTabs == TypeTab.EXPENSES,

@@ -117,7 +117,7 @@ class ExpensesViewModel(
 
         when (viewState.currentTabs) {
             TypeTab.EXPENSES -> getItems(true)
-            TypeTab.INCOMES -> getItems(true)
+            TypeTab.INCOMES -> getItems(false)
             TypeTab.ALL -> getAllItems()
         }
     }
@@ -158,7 +158,10 @@ class ExpensesViewModel(
                             typeData = TypeData.DATE
                         )
                     )
-                } else if (model.date.day != uiModels[index - 1].date.day) {
+                } else if (
+                    model.date.day != uiModels[index - 1].date.day ||
+                    model.date.month != uiModels[index - 1].date.month
+                ) {
                     resultList.add(
                         ItemsUiModel(
                             id = model.id + 1000,

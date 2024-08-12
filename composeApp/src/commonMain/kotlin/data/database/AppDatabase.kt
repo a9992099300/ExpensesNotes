@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import features.expenses.models.ItemDataModel
 import features.expenses.models.IncomesDataModel
 
-@Database(entities = [ItemDataModel::class, IncomesDataModel::class], version = 1)
+@Database(entities = [ItemDataModel::class, IncomesDataModel::class], version = 2)
 abstract class AppDatabase: RoomDatabase(), DB {
     abstract fun getExpensesDao(): ExpensesDao
 

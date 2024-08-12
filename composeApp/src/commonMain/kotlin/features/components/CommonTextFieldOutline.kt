@@ -40,8 +40,8 @@ fun CommonTextFieldOutline(
             keyboardType = keyboardType
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.primaryTextColor,
-            focusedLabelColor = AppTheme.colors.primaryTextColor,
+            focusedBorderColor = AppTheme.colors.activeBorder,
+            focusedLabelColor = AppTheme.colors.activeBorder,
         ),
         singleLine = singleLine
     )
