@@ -1,7 +1,7 @@
 package features.expenses.repository
 
 import features.expenses.models.ItemDataModel
-import features.models.TypePeriod
+import ui.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.LocalDateTime

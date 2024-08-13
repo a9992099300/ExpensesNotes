@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import features.expenses.addexpenses.AddExpensesScreen
+import features.addexpenses.AddExpensesScreen
 
 enum class CreateFlowScreens(val title: String) {
     Start("start")

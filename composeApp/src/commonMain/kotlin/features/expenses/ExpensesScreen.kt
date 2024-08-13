@@ -19,12 +19,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -34,10 +35,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -51,8 +58,8 @@ import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
 import expensenotes.composeapp.generated.resources.month
 import expensenotes.composeapp.generated.resources.year
-import features.components.CommonFilterChip
-import features.components.CommonText
+import ui.components.CommonFilterChip
+import ui.components.CommonText
 import features.expenses.models.DateText
 import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
@@ -61,19 +68,20 @@ import features.expenses.models.ExpensesTag
 import features.expenses.models.TypeData
 import features.expenses.models.TypePicker
 import features.expenses.viewmodel.ExpensesViewModel
-import features.expenses.widgets.DateItem
-import features.expenses.widgets.ExpensesItem
-import features.models.ActionDate
-import features.models.CategoryUiModel
-import features.models.ExpensesStateScreen
-import features.models.TypePeriod
-import features.models.TypeTab
+import kotlinx.coroutines.flow.MutableStateFlow
+import ui.components.DateItem
+import ui.components.ExpensesItem
+import ui.models.ActionDate
+import ui.models.CategoryUiModel
+import ui.models.ExpensesStateScreen
+import ui.models.TypePeriod
+import ui.models.TypeTab
 import navigation.LocalNavHost
 import navigation.NavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import themes.AppTheme
+import ui.themes.AppTheme
 
 @Composable
 internal fun ExpensesScreen(
@@ -118,6 +126,8 @@ fun ContentExpensesScreen(
     onChangeDate: (ActionDate) -> Unit,
     onChangeTab: (TypeTab) -> Unit
 ) {
+    val stateVisibleFloatingButton = remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier.fillMaxSize().padding(0.dp, 0.dp, 0.dp, 56.dp),
         color = AppTheme.colors.primaryBackground,
@@ -136,14 +146,16 @@ fun ContentExpensesScreen(
                     viewState.currentCategory,
                     TypePicker.LIST
                 )
-                ListExpensesContent(viewState)
+                ListExpensesContent(viewState) {
+                    stateVisibleFloatingButton.value = true
+                }
 
             }
 
             FloatingActionButton(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomEnd)
-                    .padding(20.dp, 20.dp),
+                    .padding(20.dp, 30.dp),
                 backgroundColor = AppTheme.colors.primaryAction,
                 onClick = {
                     onChangeStateScreen.invoke(ExpensesStateScreen.ADD_EXPENSES)
@@ -163,7 +175,13 @@ private fun TabSelector(
 ) {
     TabRow(
         selectedTabIndex = viewState.currentTabs.index,
-        backgroundColor = AppTheme.colors.navbarBackground
+        backgroundColor = AppTheme.colors.navbarBackground,
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                Modifier.tabIndicatorOffset(tabPositions[viewState.currentTabs.index]),
+                color = AppTheme.colors.activeBorder
+            )
+        }
     ) {
         Tab(
             selected = viewState.currentTabs == TypeTab.EXPENSES,
@@ -173,7 +191,7 @@ private fun TabSelector(
         Tab(
             selected = viewState.currentTabs == TypeTab.INCOMES,
             onClick = { onChangeTab(TypeTab.INCOMES) },
-            text = { Text(text = stringResource(Res.string.incomes)) }
+            text = { Text(text = stringResource(Res.string.incomes)) },
         )
         Tab(
             selected = viewState.currentTabs == TypeTab.ALL,
@@ -305,16 +323,42 @@ fun ItemTag(
 }
 
 @Composable
-fun ListExpensesContent(expenses: ExpensesContentState) {
+fun ListExpensesContent(
+    expenses: ExpensesContentState,
+    animateFloatingButton: () -> Unit
+) {
     val state = rememberLazyListState()
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+             //  println("available $available source $source")
+                animateFloatingButton()
+                val delta = available.y
+               // println("onPreScroll available $available delta $delta")
+                // called when you scroll the content
+                return Offset.Zero
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+             //   println("onPostScroll consumed $consumed available $available source $source")
+                return super.onPostScroll(consumed, available, source)
+            }
+        }
+    }
 
     LaunchedEffect(expenses.currentCategory, expenses.currentTabs) {
         snapshotFlow { state.firstVisibleItemIndex }
             .collect {
+                println("state.firstVisibleItemIndex ${state.firstVisibleItemIndex}")
                 // Scroll to the top if a new item is added.
                 // (But only if user is scrolled to the top already.)
-                if (it <= 1) {
-                    state.scrollToItem(0)
+                if (it > 0) {
+                    state.animateScrollToItem(index = 0)
                 }
             }
     }
@@ -322,10 +366,11 @@ fun ListExpensesContent(expenses: ExpensesContentState) {
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp),
+            .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp)
+            .nestedScroll(nestedScrollConnection),
         state = state
 //            .verticalScroll(state)
-          //  .nestedScroll(),
+
     ) {
         items(
             items = expenses.items,

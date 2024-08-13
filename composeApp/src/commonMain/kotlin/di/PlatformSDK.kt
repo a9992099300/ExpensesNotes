@@ -2,7 +2,7 @@ package di
 
 import data.database.AppDatabase
 import di.database.daoModule
-import features.expenses.di.repositoryModule
+import di.modules.repositoryModule
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.direct

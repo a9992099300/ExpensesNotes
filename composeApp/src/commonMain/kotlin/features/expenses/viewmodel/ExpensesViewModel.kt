@@ -11,9 +11,9 @@ import features.expenses.models.TypeData
 import features.expenses.models.getDateText
 import features.expenses.models.mapToExpensesUiModel
 import features.expenses.repository.ExpensesRepository
-import features.models.ActionDate
-import features.models.TypePeriod
-import features.models.TypeTab
+import ui.models.ActionDate
+import ui.models.TypePeriod
+import ui.models.TypeTab
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest

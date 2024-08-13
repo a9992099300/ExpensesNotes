@@ -6,6 +6,7 @@
     <string name="expenses_incomes">Расходы/Доходы</string>
     <string name="regular_payment">Регулярные</string>
     <string name="loans">Кредиты</string>
+    <string name="setting">Настройки</string>
     <string name="day">День</string>
     <string name="month">Месяц</string>
     <string name="year">Год</string>

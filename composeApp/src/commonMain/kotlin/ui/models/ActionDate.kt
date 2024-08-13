@@ -1,4 +1,4 @@
-package features.models
+package ui.models
 
 enum class ActionDate {
     INCREASE,

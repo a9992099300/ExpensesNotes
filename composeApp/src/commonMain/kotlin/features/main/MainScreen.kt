@@ -19,14 +19,14 @@ import navigation.rememberNavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import themes.AppTheme
+import ui.themes.AppTheme
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MainScreen() {
     val navigationState = rememberNavigationState()
 
-    val items = listOf(MainScreens.Expenses, MainScreens.Regular, MainScreens.Loans)
+    val items = listOf(MainScreens.Expenses, MainScreens.Regular, MainScreens.Loans, MainScreens.Setting)
     val snackBarHostState = SnackbarHostState()
     val scope = rememberCoroutineScope()
 
@@ -51,8 +51,8 @@ fun MainScreen() {
                                 navigationState.navigateTo(screen.route)
                             }
                         },
-                        selectedContentColor = AppTheme.colors.primaryTextColor,
-                        unselectedContentColor = AppTheme.colors.primaryTextColor.copy(alpha = ContentAlpha.disabled)
+                        selectedContentColor = AppTheme.colors.activeBorder,
+                        unselectedContentColor = AppTheme.colors.activeBorder.copy(alpha = ContentAlpha.disabled)
                     )
                 }
             }

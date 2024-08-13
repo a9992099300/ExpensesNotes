@@ -13,5 +13,6 @@ fun AppNavGraph(
         composable(MainScreens.Expenses.route) { ExpensesScreen(navigationState) }
         composable(MainScreens.Regular.route) { }
         composable(MainScreens.Loans.route) { }
+        composable(MainScreens.Setting.route) { }
     }
 }

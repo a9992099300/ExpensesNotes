@@ -2,7 +2,7 @@ package features.expenses.repository
 
 import data.database.AppDatabase
 import features.expenses.models.ItemDataModel
-import features.models.TypePeriod
+import ui.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

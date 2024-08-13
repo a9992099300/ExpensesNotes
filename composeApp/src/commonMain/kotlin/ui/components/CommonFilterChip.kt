@@ -1,4 +1,4 @@
-package features.components
+package ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ChipDefaults
@@ -11,9 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import features.models.CategoryUiModel
-import features.models.TypePeriod
-import themes.AppTheme
+import ui.models.CategoryUiModel
+import ui.models.TypePeriod
+import ui.themes.AppTheme
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
 @Composable

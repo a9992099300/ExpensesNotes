@@ -10,7 +10,7 @@ import androidx.navigation.navArgument
 import navigation.LocalNavHost
 import navigation.addExpension.AddExpensesFlow
 import features.main.MainScreen
-import themes.MainTheme
+import ui.themes.MainTheme
 
 @Composable
 fun App(

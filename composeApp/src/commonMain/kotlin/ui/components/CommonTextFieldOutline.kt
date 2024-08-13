@@ -1,4 +1,4 @@
-package features.components
+package ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import themes.AppTheme
+import ui.themes.AppTheme
 
 @Composable
 fun CommonTextFieldOutline(

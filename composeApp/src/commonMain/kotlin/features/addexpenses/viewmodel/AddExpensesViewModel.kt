@@ -1,4 +1,4 @@
-package features.expenses.addexpenses.viewmodel
+package features.addexpenses.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import base.BaseViewModel
@@ -11,20 +11,20 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import features.expenses.addexpenses.models.AddExpensesAction
-import features.expenses.addexpenses.models.AddExpensesEvent
-import features.expenses.addexpenses.models.AddExpensesViewState
+import features.addexpenses.models.AddExpensesAction
+import features.addexpenses.models.AddExpensesEvent
+import features.addexpenses.models.AddExpensesViewState
 import features.expenses.models.DateText
 import features.expenses.models.ItemDataModel
 import features.expenses.models.ViewState
 import features.expenses.models.getExpensesTags
 import features.expenses.models.getIncomesTags
 import features.expenses.repository.ExpensesRepository
-import features.models.ActionDate
-import features.models.TypePeriod
-import features.models.TypeTab
-import features.models.getTab
-import features.utils.Dates
+import ui.models.ActionDate
+import ui.models.TypePeriod
+import ui.models.TypeTab
+import ui.models.getTab
+import ui.utils.Dates
 import kotlinx.coroutines.launch
 
 class AddExpensesViewModel(

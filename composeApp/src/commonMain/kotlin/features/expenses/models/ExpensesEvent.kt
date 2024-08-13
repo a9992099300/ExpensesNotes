@@ -1,8 +1,8 @@
 package features.expenses.models
 
-import features.models.ActionDate
-import features.models.TypePeriod
-import features.models.TypeTab
+import ui.models.ActionDate
+import ui.models.TypePeriod
+import ui.models.TypeTab
 
 sealed class ExpensesEvent {
     data class OnPeriodClick(val category: TypePeriod) : ExpensesEvent()

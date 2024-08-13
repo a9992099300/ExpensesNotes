@@ -1,4 +1,4 @@
-package features.expenses.addexpenses
+package features.addexpenses
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,25 +31,25 @@ import expensenotes.composeapp.generated.resources.comment
 import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
 import expensenotes.composeapp.generated.resources.input_sum
-import features.components.CommonButton
-import features.components.CommonText
-import features.components.CommonTextFieldOutline
+import ui.components.CommonButton
+import ui.components.CommonText
+import ui.components.CommonTextFieldOutline
 import features.expenses.ItemTag
-import features.expenses.addexpenses.models.AddExpensesAction
-import features.expenses.addexpenses.models.AddExpensesEvent
-import features.expenses.addexpenses.models.AddExpensesViewState
-import features.expenses.addexpenses.viewmodel.AddExpensesViewModel
+import features.addexpenses.models.AddExpensesAction
+import features.addexpenses.models.AddExpensesEvent
+import features.addexpenses.models.AddExpensesViewState
+import features.addexpenses.viewmodel.AddExpensesViewModel
 import features.expenses.getDateText
 import features.expenses.models.ExpensesTag
 import features.expenses.models.TypePicker
-import features.models.ActionDate
-import features.models.TypePeriod
-import features.models.TypeTab
+import ui.models.ActionDate
+import ui.models.TypePeriod
+import ui.models.TypeTab
 import navigation.LocalNavHost
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
-import themes.AppTheme
+import ui.themes.AppTheme
 
 @Composable
 internal fun AddExpensesScreen(
@@ -217,11 +217,13 @@ fun AddExpensesContent(
             }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         CommonButton(stringResource(Res.string.back_to_list),
             onClickButton = { outerNavigation.popBackStack() }
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

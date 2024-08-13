@@ -1,11 +1,10 @@
-package themes
+package ui.themes
 
 import ColorsApp
 import LocalColorProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
-
 
 object AppTheme {
    internal val colors: ColorsApp

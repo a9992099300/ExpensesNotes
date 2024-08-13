@@ -1,4 +1,4 @@
-package features.expenses.widgets
+package ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import features.expenses.models.ItemsUiModel
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import themes.AppTheme
+import ui.themes.AppTheme
 import utils.formatPrice
 
 

@@ -1,4 +1,4 @@
-package features.expenses.di
+package di.modules
 
 import org.kodein.di.DI
 import org.kodein.di.bind

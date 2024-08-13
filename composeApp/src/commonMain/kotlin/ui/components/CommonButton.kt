@@ -1,4 +1,4 @@
-package features.components
+package ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,11 +10,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import themes.AppTheme
+import ui.themes.AppTheme
 
 
 @Composable
@@ -27,14 +25,14 @@ fun CommonButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
-            .clip(shape = RoundedCornerShape(24.dp)),
+            .height(48.dp),
         onClick = onClickButton,
         colors = ButtonDefaults.buttonColors(
             contentColor = AppTheme.colors.secondaryTextColor,
             backgroundColor = AppTheme.colors.primaryAction,
         ),
-        elevation = ButtonDefaults.elevation(defaultElevation = 4.dp)
+        elevation = ButtonDefaults.elevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(24.dp)
     ) {
         if (isLoading) {
             CircularProgressIndicator(
