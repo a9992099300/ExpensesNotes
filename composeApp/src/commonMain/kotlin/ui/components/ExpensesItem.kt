@@ -40,7 +40,7 @@ fun ExpensesItem(
         border = BorderStroke(
             1.dp,
             AppTheme.colors.activeBorder
-           // if (item.isExpenses) AppTheme.colors.tagColorRed else AppTheme.colors.tagColorBlue
+            // if (item.isExpenses) AppTheme.colors.tagColorRed else AppTheme.colors.tagColorBlue
         ),
         elevation = 5.dp
     ) {
@@ -58,7 +58,7 @@ fun ExpensesItem(
 
             Text(
                 modifier = Modifier.padding(start = 16.dp),
-                text = stringResource(item.tag.name) ,
+                text = stringResource(item.tag.name),
                 textAlign = TextAlign.Center
             )
 
@@ -70,16 +70,8 @@ fun ExpensesItem(
 
             Spacer(modifier = Modifier.weight(1f))
 
-//            Text(
-//                modifier = Modifier.padding(32.dp, 0.dp),
-//                text = item.date.time,
-//                textAlign = TextAlign.Center
-//            )
-//
-//            Spacer(modifier = Modifier.weight(0.4f))
-
             Icon(
-                imageVector =  if (item.isExpenses) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
+                imageVector = if (item.isExpenses) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
                 contentDescription = stringResource(item.tag.name),
                 tint = if (item.isExpenses) AppTheme.colors.tagColorRed else AppTheme.colors.tagColorGreen
             )
@@ -87,7 +79,7 @@ fun ExpensesItem(
             Text(
                 modifier = Modifier,
                 textAlign = TextAlign.End,
-                text = item.sum.formatPrice()
+                text = item.amount.formatPrice()
             )
         }
     }

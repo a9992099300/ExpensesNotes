@@ -23,6 +23,11 @@
     <string name="comment">Комментарий</string>
     <string name="salary">Зарплата</string>
     <string name="other_incomes">Другие</string>
+    <string name="cancel">Отмена</string>
+    <string name="add_new_item">Добавьте новую запись</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_item">Удалить выбранную запись?</string>
+    <string name="ok">Ок</string>
 </resources>
 
 

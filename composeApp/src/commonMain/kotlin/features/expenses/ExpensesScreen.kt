@@ -1,17 +1,22 @@
 package features.expenses
 
 import NavigationScreens
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.End
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,9 +24,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
@@ -29,22 +39,24 @@ import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -58,8 +70,6 @@ import expensenotes.composeapp.generated.resources.expenses
 import expensenotes.composeapp.generated.resources.incomes
 import expensenotes.composeapp.generated.resources.month
 import expensenotes.composeapp.generated.resources.year
-import ui.components.CommonFilterChip
-import ui.components.CommonText
 import features.expenses.models.DateText
 import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
@@ -68,19 +78,21 @@ import features.expenses.models.ExpensesTag
 import features.expenses.models.TypeData
 import features.expenses.models.TypePicker
 import features.expenses.viewmodel.ExpensesViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import ui.components.DateItem
-import ui.components.ExpensesItem
-import ui.models.ActionDate
-import ui.models.CategoryUiModel
-import ui.models.ExpensesStateScreen
-import ui.models.TypePeriod
-import ui.models.TypeTab
 import navigation.LocalNavHost
 import navigation.NavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import ui.components.CommonFilterChip
+import ui.components.CommonText
+import ui.components.DateItem
+import ui.components.ExpensesItem
+import ui.components.SumItem
+import ui.models.ActionDate
+import ui.models.CategoryUiModel
+import ui.models.ExpensesStateScreen
+import ui.models.TypePeriod
+import ui.models.TypeTab
 import ui.themes.AppTheme
 
 @Composable
@@ -113,6 +125,9 @@ internal fun ExpensesScreen(
         },
         onChangeTab = {
             viewModel.obtainEvent(ExpensesEvent.OnTabChange(it))
+        },
+        onDeleteItem = {
+            viewModel.obtainEvent(ExpensesEvent.OnDeleteItem(it))
         }
     )
 }
@@ -124,45 +139,80 @@ fun ContentExpensesScreen(
     onChangeStateScreen: (ExpensesStateScreen) -> Unit,
     onClickPeriod: (TypePeriod) -> Unit,
     onChangeDate: (ActionDate) -> Unit,
-    onChangeTab: (TypeTab) -> Unit
+    onChangeTab: (TypeTab) -> Unit,
+    onDeleteItem: (Long) -> Unit
 ) {
-    val stateVisibleFloatingButton = remember { mutableStateOf(false) }
+    var stateVisibleFloatingButton by remember { mutableStateOf(true) }
+    var stateVisibleSum by remember { mutableStateOf(true) }
 
     Surface(
-        modifier = modifier.fillMaxSize().padding(0.dp, 0.dp, 0.dp, 56.dp),
+        modifier = modifier.fillMaxSize().padding(bottom = 56.dp),
         color = AppTheme.colors.primaryBackground,
     ) {
         Box {
             Column {
-                TabSelector(viewState, onChangeTab)
+                TabSelector(viewState.currentTabs, onChangeTab)
                 ChooseCategory(
                     viewState.currentCategory
                 ) {
                     onClickPeriod(it)
                 }
-                datePicker(
+                DatePicker(
                     onChangeDate,
                     viewState.dateText,
                     viewState.currentCategory,
                     TypePicker.LIST
                 )
-                ListExpensesContent(viewState) {
-                    stateVisibleFloatingButton.value = true
+                AnimatedVisibility(stateVisibleSum) {
+                    SumView(viewState.expensesSum, viewState.incomesSum, viewState.currentTabs)
                 }
-
+                ListExpensesContent(
+                    viewState,
+                    visibleFloatingButton = {
+                        stateVisibleFloatingButton = it
+                    },
+                    deleteItem = { onDeleteItem(it) },
+                    visibleSumView = {
+                        stateVisibleSum = it
+                    }
+                )
             }
-
-            FloatingActionButton(
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomEnd)
-                    .padding(20.dp, 30.dp),
-                backgroundColor = AppTheme.colors.primaryAction,
-                onClick = {
-                    onChangeStateScreen.invoke(ExpensesStateScreen.ADD_EXPENSES)
-                }
+            Column(
+                modifier = Modifier.align(Alignment.BottomEnd).fillMaxWidth()
             ) {
-                Icon(Icons.Outlined.Add, contentDescription = null)
+                AnimatedVisibility(stateVisibleFloatingButton) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(20.dp, 30.dp),
+                            backgroundColor = AppTheme.colors.primaryAction,
+                            onClick = {
+                                onChangeStateScreen.invoke(ExpensesStateScreen.ADD_EXPENSES)
+                            }
+                        ) {
+                            Icon(Icons.Outlined.Add, contentDescription = null)
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun SumView(sumExpenses: Long, sumIncomes: Long, type: TypeTab) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if (type == TypeTab.EXPENSES || type == TypeTab.ALL) {
+            SumItem(sumExpenses, Icons.Outlined.KeyboardArrowDown, AppTheme.colors.tagColorRed)
+        }
+
+        if (type == TypeTab.INCOMES || type == TypeTab.ALL) {
+            SumItem(sumIncomes, Icons.Outlined.KeyboardArrowUp, AppTheme.colors.tagColorGreen)
         }
     }
 }
@@ -170,31 +220,31 @@ fun ContentExpensesScreen(
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun TabSelector(
-    viewState: ExpensesContentState,
+    currentTabs: TypeTab,
     onChangeTab: (TypeTab) -> Unit
 ) {
     TabRow(
-        selectedTabIndex = viewState.currentTabs.index,
+        selectedTabIndex = currentTabs.index,
         backgroundColor = AppTheme.colors.navbarBackground,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
-                Modifier.tabIndicatorOffset(tabPositions[viewState.currentTabs.index]),
+                Modifier.tabIndicatorOffset(tabPositions[currentTabs.index]),
                 color = AppTheme.colors.activeBorder
             )
         }
     ) {
         Tab(
-            selected = viewState.currentTabs == TypeTab.EXPENSES,
+            selected = currentTabs == TypeTab.EXPENSES,
             onClick = { onChangeTab(TypeTab.EXPENSES) },
             text = { Text(text = stringResource(Res.string.expenses)) }
         )
         Tab(
-            selected = viewState.currentTabs == TypeTab.INCOMES,
+            selected = currentTabs == TypeTab.INCOMES,
             onClick = { onChangeTab(TypeTab.INCOMES) },
             text = { Text(text = stringResource(Res.string.incomes)) },
         )
         Tab(
-            selected = viewState.currentTabs == TypeTab.ALL,
+            selected = currentTabs == TypeTab.ALL,
             onClick = { onChangeTab(TypeTab.ALL) },
             text = { Text(text = stringResource(Res.string.all)) }
         )
@@ -202,7 +252,7 @@ private fun TabSelector(
 }
 
 @Composable
-fun datePicker(
+fun DatePicker(
     onChangeDate: (ActionDate) -> Unit,
     dateText: DateText,
     currentCategory: TypePeriod,
@@ -322,31 +372,26 @@ fun ItemTag(
     }
 }
 
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalFoundationApi::class,
+    ExperimentalResourceApi::class
+)
 @Composable
 fun ListExpensesContent(
     expenses: ExpensesContentState,
-    animateFloatingButton: () -> Unit
+    visibleFloatingButton: (Boolean) -> Unit,
+    visibleSumView: (Boolean) -> Unit,
+    deleteItem: (Long) -> Unit
 ) {
     val state = rememberLazyListState()
+    var isDeleteRequested by remember { mutableStateOf(false) }
+    var isCancelDismiss by remember { mutableStateOf(false) }
 
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-             //  println("available $available source $source")
-                animateFloatingButton()
-                val delta = available.y
-               // println("onPreScroll available $available delta $delta")
-                // called when you scroll the content
-                return Offset.Zero
-            }
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-             //   println("onPostScroll consumed $consumed available $available source $source")
-                return super.onPostScroll(consumed, available, source)
+    if (state.isScrollInProgress) {
+        visibleFloatingButton(false)
+        DisposableEffect(Unit) {
+            onDispose {
+                visibleFloatingButton(true)
             }
         }
     }
@@ -354,11 +399,21 @@ fun ListExpensesContent(
     LaunchedEffect(expenses.currentCategory, expenses.currentTabs) {
         snapshotFlow { state.firstVisibleItemIndex }
             .collect {
-                println("state.firstVisibleItemIndex ${state.firstVisibleItemIndex}")
-                // Scroll to the top if a new item is added.
-                // (But only if user is scrolled to the top already.)
+                // Скрол наверх если сменили тип или период
                 if (it > 0) {
                     state.animateScrollToItem(index = 0)
+                } else {
+                }
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { state.firstVisibleItemIndex }
+            .collect {
+                if (it > 0) {
+                    visibleSumView(false)
+                } else {
+                    visibleSumView(true)
                 }
             }
     }
@@ -366,18 +421,46 @@ fun ListExpensesContent(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp)
-            .nestedScroll(nestedScrollConnection),
+            .padding(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp),
         state = state
-//            .verticalScroll(state)
-
     ) {
         items(
             items = expenses.items,
             key = { it.id }
         ) { model ->
+            val dismissState = rememberDismissState()
+            if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+                deleteItem(model.id)
+            }
             if (model.typeData == TypeData.DATA) {
-                ExpensesItem(model)
+                SwipeToDismiss(
+                    modifier = Modifier.animateItemPlacement(),
+                    state = dismissState,
+                    background = {
+                        Card(
+                            modifier = Modifier.padding(16.dp, 4.dp).height(48.dp).fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            backgroundColor = AppTheme.colors.tagColorRedSlow,
+                        ) {
+                            Row(
+                                modifier = Modifier.height(10.dp).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = End
+                            ) {
+                                Image(
+                                    imageVector = Icons.Outlined.Delete,
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    contentDescription = "Delete Icon",
+                                    alignment = Alignment.CenterEnd,
+                                )
+                            }
+
+                        }
+                    },
+                    directions = setOf(DismissDirection.EndToStart)
+                ) {
+                    ExpensesItem(model)
+                }
             } else {
                 DateItem(model)
             }
@@ -391,4 +474,29 @@ val categories: List<CategoryUiModel> = listOf(
     CategoryUiModel(TypePeriod.MONTH, Res.string.month),
     CategoryUiModel(TypePeriod.YEAR, Res.string.year)
 )
+
+//                if (isCancelDismiss) {
+//                    LaunchedEffect(Unit) {
+//                        dismissState.reset()
+//                    }
+//                    isCancelDismiss = false
+//                }
+//                LaunchedEffect(Unit) {
+//                    isDeleteRequested = true
+//                }
+
+//    if (isDeleteRequested) {
+//        CommonDialog(
+//            text = null,
+//            title = Res.string.delete_item,
+//            onCanceled = {
+//                isDeleteRequested = false
+//                isCancelDismiss = true
+//            },
+//            onSuccess = {
+//                isDeleteRequested = false
+//                // component.deleteChapter()
+//            }
+//        )
+//    }
 

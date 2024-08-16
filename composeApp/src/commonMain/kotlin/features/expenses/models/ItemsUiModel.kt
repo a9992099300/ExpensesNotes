@@ -4,12 +4,11 @@ import androidx.compose.runtime.Immutable
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Immutable
 data class ItemsUiModel(
     val id: Long,
-    val sum: Long = 0,
+    val amount: Long = 0,
     val comment: String = "",
     val tag: Tag = ExpensesTag.Home(),
     val date: DateText,
@@ -24,7 +23,7 @@ fun mapToExpensesUiModel(data: ItemDataModel): ItemsUiModel {
     val localDateTimeDay = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     return ItemsUiModel(
         id = data.id,
-        sum = data.sum,
+        amount = data.sum,
         comment = data.comment,
         tag = getExpensesTags().find { it.tagName == data.tag } ?: IncomesTag.Other(),
         date = getDateText(localDateTimeDay),

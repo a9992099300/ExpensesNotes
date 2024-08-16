@@ -12,12 +12,12 @@ interface ExpensesRepository {
 
     fun saveDate(date: LocalDateTime)
 
-    fun resetDate(date: LocalDateTime)
-
     suspend fun addItem(model: ItemDataModel)
 
     fun getItemsList(): Flow<List<ItemDataModel>>
 
     suspend fun getItemsList(typePeriod: TypePeriod): Flow<List<ItemDataModel>>
+
+    suspend fun deleteItem(id: Long)
 
 }

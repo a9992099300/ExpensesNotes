@@ -16,6 +16,7 @@ data class ColorsApp(
     val tagTextColor: Color,
     val activeBorder: Color,
     val tagColorRed: Color,
+    val tagColorRedSlow: Color,
     val tagColorGreen: Color
 )
 
@@ -34,6 +35,7 @@ val palette = ColorsApp(
     tagTextColor = Color(0xFF44A9F4),
     activeBorder = Color(     0xFF1f6dff),
     tagColorRed = Color(0xFFff1919),
+    tagColorRedSlow = Color(0xFFF4E1E1),
     tagColorGreen = Color(0xFF00d17a)
 )
 

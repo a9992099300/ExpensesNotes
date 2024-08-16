@@ -51,18 +51,20 @@ class ExpensesViewModel(
             is ExpensesEvent.OnPeriodClick -> {
                 changeDateType(viewEvent.category, expensesRepository.dateFlow.value)
             }
-
             is ExpensesEvent.OnDateChange -> {
                 changeDate(viewEvent.actionDate, state)
             }
-
             is ExpensesEvent.OnTabChange -> {
                 changeTab(state, viewEvent)
             }
-
             ExpensesEvent.OnAddClick -> {
                 viewModelScope.launch {
                     viewAction = ExpensesAction.OpenAddExpenses(0, viewState.currentTabs)
+                }
+            }
+            is ExpensesEvent.OnDeleteItem -> {
+                viewModelScope.launch {
+                    expensesRepository.deleteItem(viewEvent.id)
                 }
             }
         }
@@ -174,8 +176,11 @@ class ExpensesViewModel(
             }
             resultList.add(model)
         }
+
         viewState = viewState.copy(
-            items = resultList
+            items = resultList,
+            expensesSum = resultList.filter { it.isExpenses }.sumOf { it.amount },
+            incomesSum = resultList.filter { !it.isExpenses }.sumOf { it.amount },
         )
     }
 }

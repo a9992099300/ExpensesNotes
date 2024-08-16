@@ -20,7 +20,6 @@ import ui.themes.AppTheme
 internal fun SplashScreen(
     navigationController: NavHostController
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()

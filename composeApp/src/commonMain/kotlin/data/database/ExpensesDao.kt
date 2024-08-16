@@ -19,6 +19,7 @@ interface ExpensesDao {
     @Insert(onConflict = REPLACE)
     suspend fun insert(item: ItemDataModel)
 
-//    @Query("SELECT * FROM ExpensesDataModel")
-//    suspend fun get(id: Long) : ExpensesDataModel
+    @Query("DELETE FROM `expenses` WHERE id = :id")
+    suspend fun deleteItem(id: Long)
+
 }

@@ -2,7 +2,6 @@ package features.expenses.repository
 
 import data.database.AppDatabase
 import features.expenses.models.ItemDataModel
-import ui.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +13,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import ui.models.TypePeriod
 
 class ExpensesRepositoryImpl(
     private val appDatabase: AppDatabase
@@ -28,11 +28,6 @@ class ExpensesRepositoryImpl(
     override val dateFlow = _dateFlow.asStateFlow()
 
     override fun saveDate(date: LocalDateTime) {
-        _dateFlow.value = date
-    }
-
-    override fun resetDate(date: LocalDateTime) {
-        _dateFlow.value = LocalDateTime(0, 1, 1, 0, 0, 0, 0)
         _dateFlow.value = date
     }
 
@@ -52,6 +47,10 @@ class ExpensesRepositoryImpl(
             TypePeriod.MONTH -> getExpensesListMonth()
             TypePeriod.YEAR -> getExpensesListYears()
         }
+
+    override suspend fun deleteItem(id: Long) {
+        appDatabase.getExpensesDao().deleteItem(id)
+    }
 
     private fun getExpensesListDay(): Flow<List<ItemDataModel>> {
         val dayStart = dateFlow.value.date.atStartOfDayIn(timeZone)

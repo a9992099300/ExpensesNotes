@@ -38,7 +38,7 @@ class AddExpensesViewModel(
 
     init {
         val date = expensesRepository.dateFlow.value
-        val typeTab = getTab(tab.toIntOrNull() ?: 0)
+        val typeTab = if (tab.toIntOrNull() == 0) TypeTab.EXPENSES else TypeTab.INCOMES
         val tags = getTags(typeTab)
         viewState = AddExpensesViewState(
             expensesViewState = ViewState.ShowContent,

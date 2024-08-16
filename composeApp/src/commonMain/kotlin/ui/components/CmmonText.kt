@@ -33,7 +33,6 @@ fun CommonText(
     )
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun CommonText(
     text: AnnotatedString,

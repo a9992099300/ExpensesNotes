@@ -16,6 +16,8 @@ data class ExpensesContentState(
     val currentCategory: TypePeriod = TypePeriod.DAY,
     val dateText: DateText = DateText(),
     val currentTabs: TypeTab = TypeTab.EXPENSES,
+    val expensesSum: Long = 0,
+    val incomesSum: Long = 0,
 )
 
 sealed class ViewState {
