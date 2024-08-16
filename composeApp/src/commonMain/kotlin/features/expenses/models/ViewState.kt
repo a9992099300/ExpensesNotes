@@ -1,10 +1,10 @@
 package features.expenses.models
 
 import androidx.compose.runtime.Immutable
-import ui.models.CategoryUiModel
-import ui.models.TypePeriod
-import ui.models.TypeTab
-import ui.utils.Dates
+import presentation.models.CategoryUiModel
+import presentation.models.TypePeriod
+import presentation.models.TypeTab
+import presentation.utils.Dates
 import kotlinx.datetime.LocalDateTime
 import utils.addZeroForTime
 

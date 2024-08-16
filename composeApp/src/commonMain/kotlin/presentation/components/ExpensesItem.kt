@@ -1,4 +1,4 @@
-package ui.components
+package presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import features.expenses.models.ItemsUiModel
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 import utils.formatPrice
 
 
@@ -53,12 +53,12 @@ fun ExpensesItem(
         ) {
             Icon(
                 painter = painterResource(item.tag.icon),
-                contentDescription = stringResource(item.tag.name)
+                contentDescription = null
             )
 
             Text(
                 modifier = Modifier.padding(start = 16.dp),
-                text = stringResource(item.tag.name),
+                text =    if (item.tag.name != null) stringResource(item.tag.name!!) else item.tag.nameString,
                 textAlign = TextAlign.Center
             )
 
@@ -72,7 +72,7 @@ fun ExpensesItem(
 
             Icon(
                 imageVector = if (item.isExpenses) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
-                contentDescription = stringResource(item.tag.name),
+                contentDescription =  if (item.tag.name != null) stringResource(item.tag.name!!) else item.tag.nameString,
                 tint = if (item.isExpenses) AppTheme.colors.tagColorRed else AppTheme.colors.tagColorGreen
             )
 

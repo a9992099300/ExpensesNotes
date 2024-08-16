@@ -13,7 +13,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import ui.models.TypePeriod
+import presentation.models.TypePeriod
 
 class ExpensesRepositoryImpl(
     private val appDatabase: AppDatabase

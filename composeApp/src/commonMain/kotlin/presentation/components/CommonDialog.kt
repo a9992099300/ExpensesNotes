@@ -1,4 +1,4 @@
-package ui.components
+package presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,7 @@ import expensenotes.composeapp.generated.resources.cancel
 import expensenotes.composeapp.generated.resources.ok
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

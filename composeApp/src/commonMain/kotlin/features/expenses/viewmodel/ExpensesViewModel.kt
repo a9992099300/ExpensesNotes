@@ -1,7 +1,7 @@
 package features.expenses.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import base.BaseViewModel
+import presentation.base.BaseViewModel
 import di.Inject.instance
 import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
@@ -11,9 +11,9 @@ import features.expenses.models.TypeData
 import features.expenses.models.getDateText
 import features.expenses.models.mapToExpensesUiModel
 import features.expenses.repository.ExpensesRepository
-import ui.models.ActionDate
-import ui.models.TypePeriod
-import ui.models.TypeTab
+import presentation.models.ActionDate
+import presentation.models.TypePeriod
+import presentation.models.TypeTab
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest

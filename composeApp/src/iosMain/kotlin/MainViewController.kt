@@ -2,7 +2,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import data.database.getDatabaseBuilder
 import di.PlatformConfiguration
 import di.PlatformSDK
-import ui.themes.MainTheme
+import presentation.themes.MainTheme
 
 fun MainViewController() =  ComposeUIViewController {
     val database = getDatabaseBuilder()

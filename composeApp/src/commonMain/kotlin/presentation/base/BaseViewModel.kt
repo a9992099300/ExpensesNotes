@@ -1,4 +1,4 @@
-package base
+package presentation.base
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.channels.BufferOverflow

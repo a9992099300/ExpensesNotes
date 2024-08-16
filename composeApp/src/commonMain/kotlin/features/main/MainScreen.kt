@@ -19,7 +19,7 @@ import navigation.rememberNavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

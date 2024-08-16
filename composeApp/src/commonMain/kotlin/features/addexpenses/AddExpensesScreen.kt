@@ -47,19 +47,19 @@ import features.addexpenses.models.AddExpensesViewState
 import features.addexpenses.viewmodel.AddExpensesViewModel
 import features.expenses.ItemTag
 import features.expenses.getDateText
-import features.expenses.models.ExpensesTag
+import features.tags.models.ExpensesTag
 import features.expenses.models.TypePicker
 import navigation.LocalNavHost
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
-import ui.components.CommonButton
-import ui.components.CommonText
-import ui.components.CommonTextFieldOutline
-import ui.models.ActionDate
-import ui.models.TypePeriod
-import ui.models.TypeTab
-import ui.themes.AppTheme
+import presentation.components.CommonButton
+import presentation.components.CommonText
+import presentation.components.CommonTextFieldOutline
+import presentation.models.ActionDate
+import presentation.models.TypePeriod
+import presentation.models.TypeTab
+import presentation.themes.AppTheme
 
 @Composable
 internal fun AddExpensesScreen(

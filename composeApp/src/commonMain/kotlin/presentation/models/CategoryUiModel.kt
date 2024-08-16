@@ -1,4 +1,4 @@
-package ui.models
+package presentation.models
 
 import androidx.compose.runtime.Immutable
 import org.jetbrains.compose.resources.ExperimentalResourceApi

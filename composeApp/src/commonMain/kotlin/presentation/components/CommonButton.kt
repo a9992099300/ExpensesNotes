@@ -1,4 +1,4 @@
-package ui.components
+package presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 
 
 @Composable

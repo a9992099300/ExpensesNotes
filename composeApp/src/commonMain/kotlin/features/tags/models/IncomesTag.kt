@@ -1,5 +1,6 @@
-package features.expenses.models
+package features.tags.models
 
+import androidx.compose.ui.graphics.Color
 import expensenotes.composeapp.generated.resources.Res
 import expensenotes.composeapp.generated.resources.attach_money_24dp
 import expensenotes.composeapp.generated.resources.other_incomes
@@ -13,25 +14,30 @@ import org.jetbrains.compose.resources.StringResource
 
 @OptIn(ExperimentalResourceApi::class)
 sealed class IncomesTag: Tag {
-    override val name = Res.string.tag_home
+    override val nameString: String = ""
+    override val name: StringResource? = Res.string.tag_home
     override val icon = Res.drawable.restaurant_24dp
     override val tagName = "salary"
+    override val color: Color = Color.White
 
     data class Salary (
-        override val name: StringResource = Res.string.salary,
+        override val name: StringResource? = Res.string.salary,
         override val icon: DrawableResource = Res.drawable.attach_money_24dp,
         override val tagName: String = "salary",
+        override val color: Color = Color.White,
     ) : ExpensesTag()
     data class OtherIncomes(
-        override val name: StringResource = Res.string.other_incomes,
+        override val name: StringResource? = Res.string.other_incomes,
         override val icon: DrawableResource = Res.drawable.payments_24dp,
         override val tagName: String = "other",
+        override val color: Color = Color.White,
     ) : ExpensesTag()
 
     data class Other(
-        override val name: StringResource = Res.string.other_incomes,
+        override val name: StringResource? = Res.string.other_incomes,
         override val icon: DrawableResource = Res.drawable.payments_24dp,
         override val tagName: String = "other",
+        override val color: Color = Color.White,
     ) : ExpensesTag()
 
 }

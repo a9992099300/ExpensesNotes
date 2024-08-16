@@ -1,6 +1,10 @@
 package features.expenses.models
 
 import androidx.compose.runtime.Immutable
+import features.tags.models.ExpensesTag
+import features.tags.models.IncomesTag
+import features.tags.models.Tag
+import features.tags.models.getExpensesTags
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

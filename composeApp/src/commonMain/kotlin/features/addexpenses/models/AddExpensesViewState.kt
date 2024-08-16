@@ -2,12 +2,12 @@ package features.addexpenses.models
 
 import androidx.compose.runtime.Immutable
 import features.expenses.models.DateText
-import features.expenses.models.ExpensesTag
+import features.tags.models.ExpensesTag
 import features.expenses.models.ViewState
-import features.expenses.models.getExpensesTags
-import ui.models.CategoryUiModel
-import ui.models.TypePeriod
-import ui.models.TypeTab
+import features.tags.models.getExpensesTags
+import presentation.models.CategoryUiModel
+import presentation.models.TypePeriod
+import presentation.models.TypeTab
 
 @Immutable
 data class AddExpensesViewState(

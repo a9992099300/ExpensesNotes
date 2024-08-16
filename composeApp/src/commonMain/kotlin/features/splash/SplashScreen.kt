@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 
 @Composable
 internal fun SplashScreen(

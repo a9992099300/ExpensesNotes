@@ -1,4 +1,4 @@
-package ui.themes
+package presentation.themes
 
 import ColorsApp
 import LocalColorProvider

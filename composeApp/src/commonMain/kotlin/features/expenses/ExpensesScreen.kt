@@ -74,7 +74,7 @@ import features.expenses.models.DateText
 import features.expenses.models.ExpensesAction
 import features.expenses.models.ExpensesContentState
 import features.expenses.models.ExpensesEvent
-import features.expenses.models.ExpensesTag
+import features.tags.models.ExpensesTag
 import features.expenses.models.TypeData
 import features.expenses.models.TypePicker
 import features.expenses.viewmodel.ExpensesViewModel
@@ -83,17 +83,17 @@ import navigation.NavigationState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ui.components.CommonFilterChip
-import ui.components.CommonText
-import ui.components.DateItem
-import ui.components.ExpensesItem
-import ui.components.SumItem
-import ui.models.ActionDate
-import ui.models.CategoryUiModel
-import ui.models.ExpensesStateScreen
-import ui.models.TypePeriod
-import ui.models.TypeTab
-import ui.themes.AppTheme
+import presentation.components.CommonFilterChip
+import presentation.components.CommonText
+import presentation.components.DateItem
+import presentation.components.ExpensesItem
+import presentation.components.SumItem
+import presentation.models.ActionDate
+import presentation.models.CategoryUiModel
+import presentation.models.ExpensesStateScreen
+import presentation.models.TypePeriod
+import presentation.models.TypeTab
+import presentation.themes.AppTheme
 
 @Composable
 internal fun ExpensesScreen(
@@ -367,8 +367,13 @@ fun ItemTag(
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Icon(painter = painterResource(tag.icon), contentDescription = stringResource(tag.name))
-        Text(stringResource(tag.name))
+        Icon(
+            painter = painterResource(tag.icon),
+            contentDescription = null
+        )
+        Text(
+            if (tag.name != null) stringResource(tag.name!!) else tag.nameString
+        )
     }
 }
 

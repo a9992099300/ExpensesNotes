@@ -1,4 +1,4 @@
-package ui.components
+package presentation.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import ui.themes.AppTheme
+import presentation.themes.AppTheme
 import utils.formatPrice
 
 @OptIn(ExperimentalResourceApi::class)

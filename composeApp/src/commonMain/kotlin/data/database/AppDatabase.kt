@@ -4,12 +4,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import features.expenses.models.ItemDataModel
 import features.expenses.models.IncomesDataModel
+import features.tags.models.TagDataModel
 
-@Database(entities = [ItemDataModel::class, IncomesDataModel::class], version = 2)
+@Database(entities = [ItemDataModel::class, IncomesDataModel::class, TagDataModel::class], version = 3)
 abstract class AppDatabase: RoomDatabase(), DB {
     abstract fun getExpensesDao(): ExpensesDao
 
     abstract fun getIncomesDao(): IncomesDao
+
+    abstract fun getTagDao(): TagDao
 
     override fun clearAllTables() {
         super.clearAllTables()

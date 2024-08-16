@@ -1,4 +1,4 @@
-package ui.models
+package presentation.models
 
 enum class TypeTab(val index: Int) {
     EXPENSES(0),

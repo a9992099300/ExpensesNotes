@@ -1,4 +1,4 @@
-package ui.models
+package presentation.models
 
 enum class ExpensesStateScreen {
     EXPENSES_LIST,

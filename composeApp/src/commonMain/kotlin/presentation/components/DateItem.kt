@@ -1,4 +1,4 @@
-package ui.components
+package presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
