@@ -379,7 +379,6 @@ fun ItemTag(
 
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalFoundationApi::class,
-    ExperimentalResourceApi::class
 )
 @Composable
 fun ListExpensesContent(

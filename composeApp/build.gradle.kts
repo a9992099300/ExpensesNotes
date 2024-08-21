@@ -5,10 +5,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
-//    alias(libs.plugins.cocoapods)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
-
+    alias(libs.plugins.googleGmsGoogleServices)
+    alias(libs.plugins.googleFirebaseCrashlytics)
+  //  alias(libs.plugins.kotlinCocoapods)
 }
 
 kotlin {
@@ -56,6 +57,7 @@ kotlin {
             implementation(libs.room.sqlite)
             implementation(libs.room.sqlite.bundled)
             implementation(libs.uuid)
+            implementation(libs.napier)
         }
 
         androidMain.dependencies {
@@ -102,6 +104,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     add("kspCommonMainMetadata", libs.room.compiler)
 //    add("kspAndroid", libs.room.compiler)
 //    add("kspIosX64", libs.room.compiler)

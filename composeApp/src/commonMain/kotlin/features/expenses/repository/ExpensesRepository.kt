@@ -5,6 +5,7 @@ import presentation.models.TypePeriod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.LocalDateTime
+import utils.Result
 
 interface ExpensesRepository {
 
@@ -12,7 +13,7 @@ interface ExpensesRepository {
 
     fun saveDate(date: LocalDateTime)
 
-    suspend fun addItem(model: ItemDataModel)
+    suspend fun addItem(model: ItemDataModel): Result<Unit>
 
     fun getItemsList(): Flow<List<ItemDataModel>>
 

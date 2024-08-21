@@ -127,12 +127,12 @@ class ExpensesViewModel(
     private fun getItems(isExpenses: Boolean) {
         job.cancelChildren()
         viewModelScope.launch(job) {
-            expensesRepository.getItemsList(viewState.currentCategory).collectLatest {
-                val models = it
-                    .filter { it.isExpenses == isExpenses }
-                    .map { data -> mapToExpensesUiModel(data) }
-                handleItems(models)
-            }
+                expensesRepository.getItemsList(viewState.currentCategory).collectLatest {
+                    val models = it
+                        .filter { it.isExpenses == isExpenses }
+                        .map { data -> mapToExpensesUiModel(data) }
+                    handleItems(models)
+                }
         }
     }
 

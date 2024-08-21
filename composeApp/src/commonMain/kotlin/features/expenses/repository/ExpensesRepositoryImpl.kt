@@ -14,6 +14,8 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import presentation.models.TypePeriod
+import utils.Result
+import utils.simpleRequest
 
 class ExpensesRepositoryImpl(
     private val appDatabase: AppDatabase
@@ -31,9 +33,11 @@ class ExpensesRepositoryImpl(
         _dateFlow.value = date
     }
 
-    override suspend fun addItem(model: ItemDataModel) {
+    override suspend fun addItem(model: ItemDataModel): Result<Unit> = simpleRequest {
         appDatabase.getExpensesDao().insert(model)
     }
+
+
 
     override fun getItemsList(): Flow<List<ItemDataModel>> =
         appDatabase.getExpensesDao().getAll()

@@ -15,10 +15,16 @@ compose-plugin = "1.6.2"
 junit = "4.13.2"
 kotlin = "1.9.23"
 coroutines = "1.7.3"
+cocoapods = "2.0.10"
 composeIcons = "1.1.0"
 room = "2.7.0-alpha04"
 sqlite = "2.5.0-alpha04"
 uuid-version = "0.8.4"
+napier = "2.6.1"
+googleGmsGoogleServices = "4.4.2"
+firebaseAnalytics = "22.0.2"
+firebaseCrashlytics = "19.0.3"
+googleFirebaseCrashlytics = "3.0.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -42,6 +48,7 @@ composeIcons-tablerIcons = { module = "br.com.devsrsouza.compose.icons:tabler-ic
 composeIcons-simpleIcons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "composeIcons" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid-version" }
 kotlinx-datetime-ext = "com.raedghazal:kotlinx_datetime_ext:1.2.0"
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 
 
@@ -49,12 +56,16 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 room-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods" }
+kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version = "1.9.23-1.0.19" }
+googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+googleFirebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
